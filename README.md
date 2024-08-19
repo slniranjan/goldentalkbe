@@ -15,3 +15,7 @@ https://github.com/google/styleguide/blob/gh-pages/eclipse-java-google-style.xml
 
 1. CREATE SEQUENCE student_id_seq START WITH 1 INCREMENT BY 1;
 
+## Swagger
+
+1. http://localhost:8080/swagger-ui/index.html
+

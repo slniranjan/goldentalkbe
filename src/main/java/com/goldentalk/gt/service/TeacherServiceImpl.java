@@ -2,8 +2,8 @@ package com.goldentalk.gt.service;
 
 import java.util.Set;
 import org.springframework.stereotype.Service;
-import com.goldentalk.gt.dto.TeacherRequest;
-import com.goldentalk.gt.dto.TeacherResponse;
+import com.goldentalk.gt.dto.TeacherRequestDto;
+import com.goldentalk.gt.dto.TeacherResponseDto;
 import com.goldentalk.gt.entity.Course;
 import com.goldentalk.gt.entity.Qualification;
 import com.goldentalk.gt.entity.Section;
@@ -33,7 +33,7 @@ public class TeacherServiceImpl implements TeacherService {
   }
 
   @Override
-  public void createTeacher(TeacherRequest request) {
+  public void createTeacher(TeacherRequestDto request) {
     
     Teacher teacher = new Teacher();
     teacher.setName(request.getName());
@@ -76,16 +76,17 @@ public class TeacherServiceImpl implements TeacherService {
   }
 
   @Override
-  public TeacherResponse retrieveTeacher(String teacherId) {
-    // TODO Auto-generated method stub
+  public TeacherResponseDto retrieveTeacher(String teacherId) {
     Teacher teacher = teacherRepository.findByTeacherId(teacherId);
-    TeacherResponse response = new TeacherResponse();
+    TeacherResponseDto response = new TeacherResponseDto();
     response.setName(teacher.getName());
     response.setTeacherId(teacher.getTeacherId());
     
     teacher.getCourses().forEach(c -> {
-      response.setCourseName(c.getName());
+      response.getCourseNames().add(c.getName());
     });
+    
+    response.setSection(teacher.getSection().getSectionName());
     
     return response;
   }

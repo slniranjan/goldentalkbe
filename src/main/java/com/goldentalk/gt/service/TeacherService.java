@@ -1,12 +1,12 @@
 package com.goldentalk.gt.service;
 
-import com.goldentalk.gt.dto.TeacherRequest;
-import com.goldentalk.gt.dto.TeacherResponse;
+import com.goldentalk.gt.dto.TeacherRequestDto;
+import com.goldentalk.gt.dto.TeacherResponseDto;
 
 public interface TeacherService {
 
-  void createTeacher(TeacherRequest request);
+  void createTeacher(TeacherRequestDto request);
   
-  TeacherResponse retrieveTeacher(String teacherId);
+  TeacherResponseDto retrieveTeacher(String teacherId);
   
 }
