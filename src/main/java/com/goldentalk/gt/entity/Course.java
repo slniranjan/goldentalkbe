@@ -6,22 +6,18 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 @Entity
-@Getter @Setter @ToString
-public class Address extends BaseEntity {
+@Getter @Setter
+public class Course extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Integer id;
   
-  private String street;
+  private String category;
   
-  private String city;
+  private String name;
   
-  private String district;
-  
-  private String province;
-  
+  private boolean isInstallment;
 }

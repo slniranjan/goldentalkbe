@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.SequenceGenerator;
 import lombok.AllArgsConstructor;
@@ -50,6 +51,9 @@ public class Student extends BaseEntity {
       inverseJoinColumns = @JoinColumn(name = "section_id")
   ) 
   private Set<Section> sections;
+  
+  @OneToMany(mappedBy = "student")
+  private Set<Payment> payments;
 
   @PrePersist
   private void generateStudentId() {
