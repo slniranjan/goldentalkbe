@@ -1,6 +1,6 @@
 package com.goldentalk.gt.entity;
 
-import java.util.Set;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,7 +21,8 @@ public class Qualification {
   
   private String institute;
   
-  @ManyToOne
+  @ManyToOne(cascade = CascadeType.PERSIST)
   private Teacher teacher;
   
+  private boolean isDeleted;
 }
