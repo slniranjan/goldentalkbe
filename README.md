@@ -11,3 +11,7 @@ https://github.com/google/styleguide/blob/gh-pages/eclipse-java-google-style.xml
 6. Create database according to dev and prod environment as needed.
 7. Test run using H2 database
 
+## postgress setup
+
+1. CREATE SEQUENCE student_id_seq START WITH 1 INCREMENT BY 1;
+
