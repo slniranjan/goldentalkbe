@@ -4,9 +4,10 @@ services:
 
   postgres:
     image: postgres
-    container_name: dev_pg
-    environment:
-      POSTGRES_PASSWORD: ninja
+    container_name: pgdev
+#    environment:
+#      POSTGRES_USER: ninja
+#      POSTGRES_PASSWORD: ninja
     ports:
       - "5432:5432"
     volumes:
