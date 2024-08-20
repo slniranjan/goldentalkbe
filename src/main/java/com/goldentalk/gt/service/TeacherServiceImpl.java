@@ -49,7 +49,8 @@ public class TeacherServiceImpl implements TeacherService {
     Set<Course> courses = courseRepository.findByIdInAndIsDeleted(request.getCourseIds(), false);
     
     if(courses.isEmpty()) {
-      throw new CourseNotFoundException("No Course found for the given Ids");
+//      throw new CourseNotFoundException("No Course found for the given Ids");
+      teacher.setCourses(null);
     }
     
     teacher.setCourses(courses);

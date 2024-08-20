@@ -7,6 +7,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.SequenceGenerator;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,8 +18,11 @@ import lombok.Setter;
 public class Course extends BaseEntity {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "course_seq_gen")
+  @SequenceGenerator(name = "course_seq_gen", sequenceName = "course_id_seq", allocationSize = 1)
   private Integer id;
+  
+  private String courseId;
   
   private String category;
   
@@ -37,5 +43,13 @@ public class Course extends BaseEntity {
   @ManyToMany(mappedBy = "courses")
   private Set<Student> students;
   
+  @OneToMany(mappedBy = "course")
+  private Set<Payment> payments;
+  
   private boolean isDeleted;
+  
+  @PrePersist
+  private void generateStudentId() {
+    this.courseId = String.format("COURSE%05d", this.id);
+  }
 }

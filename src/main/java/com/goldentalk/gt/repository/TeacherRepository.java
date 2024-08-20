@@ -6,4 +6,7 @@ import com.goldentalk.gt.entity.Teacher;
 public interface TeacherRepository extends CrudRepository<Teacher, Integer> {
 
   Teacher findByTeacherId(String teacherId);
+  
+  Teacher findByTeacherIdAndIsDeleted(String teacherId, boolean isDeleted);
+  
 }

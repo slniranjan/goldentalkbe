@@ -8,4 +8,8 @@ import com.goldentalk.gt.entity.Course;
 public interface CourseRepository extends CrudRepository<Course, Integer> {
 
   Set<Course> findByIdInAndIsDeleted(List<Integer> id, boolean isDeleted);
+  
+  Course findByCourseIdAndIsDeleted(String courseId, boolean isDeleted);
+  
+  Course findByNameAndIsDeleted(String name, boolean isDeleted);
 }

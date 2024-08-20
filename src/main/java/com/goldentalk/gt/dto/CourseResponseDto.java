@@ -15,7 +15,7 @@ public class CourseResponseDto {
   
   private String teacherId;
   
-  private List<String> studentId;
+  private List<String> studentIds;
   
   private int studnetCount;
   

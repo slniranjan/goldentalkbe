@@ -62,6 +62,8 @@ public class Student extends BaseEntity {
       inverseJoinColumns = @JoinColumn(name = "course_id")      
   )
   private Set<Course> courses;
+  
+  private boolean isDeleted;
 
   @PrePersist
   private void generateStudentId() {

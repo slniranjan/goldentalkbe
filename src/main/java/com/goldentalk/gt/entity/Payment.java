@@ -28,4 +28,7 @@ public class Payment extends BaseEntity{
   @ManyToOne
   private Student student;
   
+  @ManyToOne
+  private Course course;
+  
 }

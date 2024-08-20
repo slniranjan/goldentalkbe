@@ -56,7 +56,7 @@ public class TeacherController {
         )
   }
   )
-  @PostMapping("/create")
+  @PostMapping()
   @ResponseStatus(code = HttpStatus.CREATED)
   public void createTeacher(@RequestBody TeacherRequestDto request) {
     logger.info("Create teacher. ");
@@ -64,7 +64,25 @@ public class TeacherController {
     logger.info("create teacher done");
   }
   
-  @GetMapping("/retrieve/{teacher-id}")
+  @Operation(
+      summary = "Get Teacher REST API",
+      description = "REST API to Get Teacher by teacherid"
+  )
+  @ApiResponses({
+        @ApiResponse(
+                responseCode = "200",
+                description = "HTTP Status OK"
+        ),
+        @ApiResponse(
+                responseCode = "400",
+                description = "HTTP Status bad request",
+                content = @Content(
+                        schema = @Schema(implementation = ErrorResponseDto.class)
+                )
+        )
+  }
+  )
+  @GetMapping("/{teacher-id}")
   public TeacherResponseDto retrieveTeacher(@PathVariable("teacher-id") String teacherId) {
 
     return teacherService.retrieveTeacher(teacherId);
