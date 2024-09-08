@@ -1,8 +1,12 @@
 package com.goldentalk.gt.service;
 
-import org.springframework.data.repository.CrudRepository;
-import com.goldentalk.gt.entity.Student;
+import com.goldentalk.gt.dto.CreateStudentRequestDto;
+import com.goldentalk.gt.dto.CreateStudentResponseDto;
+import com.goldentalk.gt.dto.StudentResponseDto;
 
-public interface StudentService extends CrudRepository<Student, Integer>{
+public interface StudentService {
 
+  CreateStudentResponseDto createStudent(CreateStudentRequestDto request);
+  
+  StudentResponseDto retrieveStudents(String studentId);
 }

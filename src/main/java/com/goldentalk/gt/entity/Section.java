@@ -28,5 +28,7 @@ public class Section extends BaseEntity {
   
   @OneToMany(mappedBy = "section" )
   private Set<Course> courses;
+  
+  private boolean deleted;
  
 }

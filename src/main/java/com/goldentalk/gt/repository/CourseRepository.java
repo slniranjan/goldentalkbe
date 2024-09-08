@@ -12,4 +12,5 @@ public interface CourseRepository extends CrudRepository<Course, Integer> {
   Course findByCourseIdAndIsDeleted(String courseId, boolean isDeleted);
   
   Course findByNameAndIsDeleted(String name, boolean isDeleted);
+  
 }

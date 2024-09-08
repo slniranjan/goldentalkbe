@@ -1,5 +1,6 @@
 package com.goldentalk.gt.controller;
 
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -138,5 +139,28 @@ public class CourseController {
   @ResponseStatus(value = HttpStatus.CREATED)
   public CourseResponseDto updateCourse(@PathVariable("course-id") String courseId, @RequestBody CreateCourseRequestDto request) {
     return courseService.updateCourse(courseId, request);
+  }
+  
+  @Operation(
+      summary = "Retrieve all courses REST API",
+      description = "Retrieve all courses REST API"
+  )
+  @ApiResponses({
+        @ApiResponse(
+                responseCode = "200",
+                description = "HTTP Status OK"
+        ),
+        @ApiResponse(
+                responseCode = "400",
+                description = "HTTP Status bad request",
+                content = @Content(
+                        schema = @Schema(implementation = ErrorResponseDto.class)
+                )
+        )
+  }
+  )
+  @GetMapping("/all")
+  public List<CourseResponseDto> retrieveCourses() {
+    return courseService.retriveAllCourses();
   }
 }

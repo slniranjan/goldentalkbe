@@ -5,4 +5,5 @@ import com.goldentalk.gt.entity.Student;
 
 public interface StudentRepository extends CrudRepository<Student, Integer> {
 
+  Student findByStudentIdAndDeleted(String studentId, boolean deleted);
 }

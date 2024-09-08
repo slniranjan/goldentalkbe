@@ -1,12 +1,12 @@
 INSERT INTO public.section(
-	created_at, update_at, created_by, section_name, updated_by) 
-	VALUES ('2024-08-19 17:03:27.852801', null, 'Admin', 'IELTS', null);
+	created_at, update_at, created_by, section_name, updated_by, deleted) 
+	VALUES ('2024-08-19 17:03:27.852801', null, 'Admin', 'IELTS', null, false);
 INSERT INTO public.section(
-	created_at, update_at, created_by, section_name, updated_by) 
-	VALUES ('2024-08-19 17:03:27.852801', null, 'Admin', 'PTE', null);
+	created_at, update_at, created_by, section_name, updated_by, deleted) 
+	VALUES ('2024-08-19 17:03:27.852801', null, 'Admin', 'PTE', null, false);
 INSERT INTO public.section(
-	created_at, update_at, created_by, section_name, updated_by) 
-	VALUES ('2024-08-19 17:03:27.852801', null, 'Admin', 'OE', null);
+	created_at, update_at, created_by, section_name, updated_by , deleted) 
+	VALUES ('2024-08-19 17:03:27.852801', null, 'Admin', 'OE', null, false);
 	
 INSERT INTO public.course(
 	amount,installment_count, is_installment, section_id, teacher_teacher_id, created_at, update_at, category, created_by, name, updated_by)

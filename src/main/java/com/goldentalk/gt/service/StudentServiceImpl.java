@@ -1,0 +1,97 @@
+package com.goldentalk.gt.service;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import com.goldentalk.gt.dto.CreateStudentRequestDto;
+import com.goldentalk.gt.dto.CreateStudentResponseDto;
+import com.goldentalk.gt.dto.StudentResponseDto;
+import com.goldentalk.gt.entity.Course;
+import com.goldentalk.gt.entity.Section;
+import com.goldentalk.gt.entity.Student;
+import com.goldentalk.gt.exception.StudentNotFoundException;
+import com.goldentalk.gt.repository.CourseRepository;
+import com.goldentalk.gt.repository.SectionRepository;
+import com.goldentalk.gt.repository.StudentRepository;
+
+@Service
+public class StudentServiceImpl implements StudentService {
+  
+  private static final Logger logger = LoggerFactory.getLogger(StudentServiceImpl.class);
+  
+  private StudentRepository studentRepository;
+  
+  private SectionRepository sectionRepository;
+  
+  private CourseRepository courseRepository;
+
+  public StudentServiceImpl(StudentRepository studentRepository,
+      SectionRepository sectionRepository, CourseRepository courseRepository) {
+    super();
+    this.studentRepository = studentRepository;
+    this.sectionRepository = sectionRepository;
+    this.courseRepository = courseRepository;
+  }
+
+  @Override
+  public CreateStudentResponseDto createStudent(CreateStudentRequestDto request) {
+    Student student = new Student();
+    student.setFirstName(request.getFirstName());
+    student.setLastName(request.getLastName());
+    student.setMiddleName(request.getMiddleName());
+    student.setDob(request.getDob());
+    student.setWhatsappNum(request.getWhatsAppNumber());
+    
+    Set<Section> sections = sectionRepository.findByIdInAndDeleted(request.getSectionId(), false);
+    
+    student.setSections(sections);
+    
+    Set<Course> courses = courseRepository.findByIdInAndIsDeleted(request.getCourseIds(), false);
+    
+    student.setCourses(courses);
+    student.setAddress(request.getAddress());
+   
+    Student stu = studentRepository.save(student);
+    
+    CreateStudentResponseDto response = new CreateStudentResponseDto();
+    response.setStudentId(stu.getStudentId());
+    
+    return response;
+  }
+
+  @Override
+  public StudentResponseDto retrieveStudents(String studentId) {
+    
+    Student student = studentRepository.findByStudentIdAndDeleted(studentId, false);
+    
+    if(student == null) {
+      throw new StudentNotFoundException("Student not found for the id " + studentId);
+    }
+    
+    return transformStudentToStudnetResponDto(student);
+  }
+
+  private StudentResponseDto transformStudentToStudnetResponDto(Student student) {
+    StudentResponseDto response = new StudentResponseDto();
+    
+    response.setStudentId(student.getStudentId());
+    response.setInternalId(student.getInternalId());
+    response.setFirstName(student.getFirstName());
+    response.setMiddleName(student.getMiddleName());
+    response.setLastName(student.getLastName());
+    
+    Set<String> sectionsIds = student.getSections().stream().map(s -> s.getId().toString()).collect(Collectors.toSet());
+    response.setSectionIds(sectionsIds);
+    
+    Set<String> courseIds = student.getCourses().stream().map(c -> c.getCourseId()).collect(Collectors.toSet());
+    response.setCourseIds(courseIds);
+    
+    response.setDob(student.getDob());
+    
+    return response;
+    
+  }
+}

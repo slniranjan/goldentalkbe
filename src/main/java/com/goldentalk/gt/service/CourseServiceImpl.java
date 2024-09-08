@@ -1,5 +1,7 @@
 package com.goldentalk.gt.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import com.goldentalk.gt.dto.AddCourseToTeacherRequestDto;
 import com.goldentalk.gt.dto.CourseResponseDto;
@@ -78,7 +80,10 @@ public class CourseServiceImpl implements CourseService {
       response.setTeacherId(course.getTeacher().getTeacherId());
       response.setTeacherName(course.getTeacher().getName() );
     }
+    List<String> studentIds = course.getStudents().stream().map(st -> st.getStudentId()).collect(Collectors.toList());
     
+    response.setStudentIds(studentIds);
+    response.setStudnetCount(studentIds.size());
     return response;
   }
 
@@ -94,7 +99,7 @@ public class CourseServiceImpl implements CourseService {
     Section section = sectionRepository.findById(request.getSectionId()).orElseThrow(() -> new SectionNotFoundException("Section Not found for the id " + request.getSectionId()));
     
     Course persistedCourse = saveCourse(request, section);
-    
+
     CreateCourseResponseDto response = new CreateCourseResponseDto();
     response.setCourseId(persistedCourse.getCourseId());
     
@@ -137,5 +142,17 @@ public class CourseServiceImpl implements CourseService {
     course.setSection(section);
     
     return courseRepository.save(course);
+  }
+
+  @Override
+  public List<CourseResponseDto> retriveAllCourses() {
+    
+    List<Course> course = (List<Course>) courseRepository.findAll();
+    
+    return course.stream().map(c -> {
+      CourseResponseDto cr = transformCourseToResponse(c);
+      return cr;
+    }).collect(Collectors.toList());
+
   }
 }

@@ -1,6 +1,5 @@
 package com.goldentalk.gt.entity;
 
-import java.util.Date;
 import java.util.Set;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -31,13 +30,15 @@ public class Student extends BaseEntity {
   
   private String studentId;
   
-  private String ineternalId;
+  private String internalId;
   
-  private String fisrtName;
+  private String firstName;
+  
+  private String middleName;
   
   private String lastName;
   
-  private Date dob;
+  private String dob;
   
   private String whatsappNum;
   
@@ -63,11 +64,14 @@ public class Student extends BaseEntity {
   )
   private Set<Course> courses;
   
-  private boolean isDeleted;
+  private boolean deleted;
 
   @PrePersist
   private void generateStudentId() {
     this.studentId = String.format("stu%05d", this.id);
+    
+    String sectionName = sections.stream().findAny().get().getSectionName();
+    this.internalId = String.format(sectionName +"%05d", this.id);
   }
   
 }
