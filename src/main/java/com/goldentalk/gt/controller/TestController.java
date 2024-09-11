@@ -19,10 +19,10 @@ public class TestController {
   
   @GetMapping("/test")
   public void update() {
-    Student stu = new Student();
-    stu.setFisrtName("Harshana");
-    stu.setLastName("Jayamaha");
-    stu.setIneternalId("pte1121");
+//    Student stu = new Student();
+//    stu.setFisrtName("Harshana");
+//    stu.setLastName("Jayamaha");
+//    stu.setIneternalId("pte1121");
 //    stu.set
 //    
 //    Address address = new Address();
@@ -33,7 +33,7 @@ public class TestController {
 //    stu.setAddress(address);
     
     
-    repo.save(stu);
+//    repo.save(stu);
     
     Student  studnet = repo.findById(1).get();
     
