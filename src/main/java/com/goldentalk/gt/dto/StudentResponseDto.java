@@ -1,5 +1,7 @@
 package com.goldentalk.gt.dto;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import com.goldentalk.gt.entity.Address;
 import lombok.Getter;
@@ -28,4 +30,7 @@ public class StudentResponseDto {
   private Set<String> sectionIds;
   
   private Set<String> courseIds;
+  
+  private List<PaymentDetailsDTO> payments = new ArrayList<PaymentDetailsDTO>();
+  
 }

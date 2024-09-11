@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.SequenceGenerator;
 import lombok.Getter;
@@ -43,8 +44,11 @@ public class Course extends BaseEntity {
   @ManyToMany(mappedBy = "courses")
   private Set<Student> students;
   
-  @OneToMany(mappedBy = "course")
-  private Set<Payment> payments;
+//  @OneToMany(mappedBy = "course")
+//  private Set<Payment> payments;
+  
+  @OneToOne
+  private Payment payment;
   
   private boolean isDeleted;
   

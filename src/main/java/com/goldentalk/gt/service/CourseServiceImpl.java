@@ -17,8 +17,10 @@ import com.goldentalk.gt.exception.TeacherNotFoundException;
 import com.goldentalk.gt.repository.CourseRepository;
 import com.goldentalk.gt.repository.SectionRepository;
 import com.goldentalk.gt.repository.TeacherRepository;
+import lombok.AllArgsConstructor;
 
 @Service
+@AllArgsConstructor
 public class CourseServiceImpl implements CourseService {
   
   private CourseRepository courseRepository;
@@ -26,15 +28,6 @@ public class CourseServiceImpl implements CourseService {
   private TeacherRepository teacherRepository;
   
   private SectionRepository sectionRepository;
-  
-  public CourseServiceImpl(CourseRepository courseRepository,
-      TeacherRepository teacherRepository,
-      SectionRepository sectionRepository) {
-    super();
-    this.courseRepository = courseRepository;
-    this.teacherRepository = teacherRepository;
-    this.sectionRepository = sectionRepository;
-  }
 
   @Override
   public CourseResponseDto retrieveCourse(String courseId) {

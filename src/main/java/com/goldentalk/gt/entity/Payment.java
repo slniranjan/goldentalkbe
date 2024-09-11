@@ -1,11 +1,14 @@
 package com.goldentalk.gt.entity;
 
-import java.time.LocalDateTime;
+import java.util.Set;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,18 +20,30 @@ public class Payment extends BaseEntity{
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Integer paymentId;
   
-  private double firstPaymentAmount;
+//  private double firstPaymentAmount;
+//  
+//  private LocalDateTime firstPaymentDate;
+//  
+//  private double secondPaymentAmount;
+//  
+//  private LocalDateTime secondPaymentDate;
   
-  private LocalDateTime firstPaymentDate;
+  private String paymentStatus;
   
-  private double secondPaymentAmount;
+  private double installmentAmount;
   
-  private LocalDateTime secondPaymentDate;
+  private double paidAmount;
+  
+  private int remainigInstallmentCount;
   
   @ManyToOne
   private Student student;
   
-  @ManyToOne
+  @OneToOne
   private Course course;
   
+  @OneToMany(mappedBy = "payment", cascade = CascadeType.ALL)
+  private Set<Installment> installments;
+  
+  private boolean deleted;
 }

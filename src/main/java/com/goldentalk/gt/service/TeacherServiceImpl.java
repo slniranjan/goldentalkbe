@@ -13,8 +13,10 @@ import com.goldentalk.gt.exception.SectionNotFoundException;
 import com.goldentalk.gt.repository.CourseRepository;
 import com.goldentalk.gt.repository.SectionRepository;
 import com.goldentalk.gt.repository.TeacherRepository;
+import lombok.AllArgsConstructor;
 
 @Service
+@AllArgsConstructor
 public class TeacherServiceImpl implements TeacherService {
   
   private SectionRepository sectionRepository;
@@ -22,15 +24,6 @@ public class TeacherServiceImpl implements TeacherService {
   private CourseRepository courseRepository;
   
   private TeacherRepository teacherRepository;
-  
-  public TeacherServiceImpl(SectionRepository sectionRepository,
-      CourseRepository courseRepository,
-      TeacherRepository teacherRepository) {
-    super();
-    this.sectionRepository = sectionRepository;
-    this.courseRepository = courseRepository;
-    this.teacherRepository = teacherRepository;
-  }
 
   @Override
   public void createTeacher(TeacherRequestDto request) {

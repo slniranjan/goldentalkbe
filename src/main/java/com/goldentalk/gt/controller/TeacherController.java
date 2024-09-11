@@ -20,6 +20,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AllArgsConstructor;
 
 @Tag(
     name = "CRUD REST APIs for Teacher",
@@ -27,16 +28,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 )
 @RestController
 @RequestMapping("/api/teacher")
+@AllArgsConstructor
 public class TeacherController {
 
   private static final Logger logger = LoggerFactory.getLogger(TeacherController.class);
   
   private TeacherService teacherService;
-
-  public TeacherController(TeacherService teacherService) {
-    super();
-    this.teacherService = teacherService;
-  }
   
   @Operation(
       summary = "Create Teacher REST API",
