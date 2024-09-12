@@ -51,7 +51,7 @@ public class PaymentServiceImpl implements PaymentService{
     payment = paymentRepository.findByCourseAndStudent(course, student);
     
     if(payment != null) {
-      saveExistingPayment(request, course, payment);
+      payment = saveExistingPayment(request, course, payment);
     } else {
       payment = saveNewPyament(request, payment, student, course);
     }
@@ -70,8 +70,6 @@ public class PaymentServiceImpl implements PaymentService{
     double courseAmount = course.getAmount();
     double requestAmount = request.getPaymentAmount();
     double minimumInstallmentAmount = course.getAmount() / course.getInstallmentCount();;
-    double installmentAmount = 0;
-    
     if(!course.isInstallment() || !request.isInstallment()) {
       if(courseAmount != requestAmount) {
         throw new IllegalArgumentException(courseAmount > requestAmount
@@ -81,53 +79,63 @@ public class PaymentServiceImpl implements PaymentService{
       payment.setPaymentStatus(PaymentStatus.COMPLETED);
       payment.setInstallmentAmount(requestAmount);  
       
-      
-      
     } else if(courseAmount == requestAmount){
       payment.setPaymentStatus(PaymentStatus.COMPLETED);
       payment.setInstallmentAmount(requestAmount);    
     } else {
-      if (courseAmount < requestAmount) {
-        throw new IllegalArgumentException("Overpaying");
-      }
-      
-      validateInstallmentCount(request, course);  // Extracted validation logic for installment count
-
-      // Calculate installment amount
-      if (request.getInstallmentCount() == course.getInstallmentCount()) {
-          installmentAmount = minimumInstallmentAmount;
-      } else {
-          installmentAmount = courseAmount / request.getInstallmentCount();
-      }
-      
-      payment.setInstallmentAmount(installmentAmount);
-      payment.setPaymentStatus(PaymentStatus.PENDING);
-      
-      payment.setMinimumInstallmentAmount(minimumInstallmentAmount); 
-
-      // Check for valid installment payment amounts
-      validateInstallmentAmount(installmentAmount, requestAmount, minimumInstallmentAmount);
-      
-      payment.setRemainigInstallmentCount(request.getInstallmentCount() - 1);
+      installmentPaymentForNewPayments(request, payment, course, courseAmount, requestAmount,
+          minimumInstallmentAmount);
     }
-    
-
-
     // Set additional payment properties
     payment.setCourse(course);
     payment.setStudent(student);
     payment.setPaidAmount(requestAmount);
 
-    // Create and add the first installment
-    Installment installment = new Installment();
-    installment.setPayment(payment);
-    installment.setPaymentAmount(requestAmount);
-    installment.setPaymentDate(LocalDateTime.now());
-
-    payment.setInstallments(Set.of(installment));
-
+    saveInstallment(true, payment, requestAmount);
+    
     return paymentRepository.save(payment);
     
+  }
+  
+  private void saveInstallment(boolean newPayment, Payment payment, double payingAmount) {
+    Installment installment = new Installment();
+    installment.setPayment(payment);
+    installment.setPaymentAmount(payingAmount);
+    installment.setPaymentDate(LocalDateTime.now());
+
+    if(newPayment) {
+      payment.setInstallments(Set.of(installment));
+    } else {
+      payment.getInstallments().add(installment);
+    }
+
+  }
+
+  private void installmentPaymentForNewPayments(PaymentRequest request, Payment payment,
+      Course course, double courseAmount, double requestAmount, double minimumInstallmentAmount) {
+    double installmentAmount;
+    if (courseAmount < requestAmount) {
+      throw new IllegalArgumentException("Overpaying");
+    }
+    
+    validateInstallmentCount(request, course);  // Extracted validation logic for installment count
+
+    // Calculate installment amount
+    if (request.getInstallmentCount() == course.getInstallmentCount()) {
+        installmentAmount = minimumInstallmentAmount;
+    } else {
+        installmentAmount = courseAmount / request.getInstallmentCount();
+    }
+    
+    payment.setInstallmentAmount(installmentAmount);
+    payment.setPaymentStatus(PaymentStatus.PENDING);
+    
+    payment.setMinimumInstallmentAmount(minimumInstallmentAmount); 
+
+    // Check for valid installment payment amounts
+    validateInstallmentAmount(installmentAmount, requestAmount, minimumInstallmentAmount);
+    
+    payment.setRemainigInstallmentCount(request.getInstallmentCount() - 1);
   }
   
   private void validateInstallmentCount(PaymentRequest request, Course course) {
@@ -148,59 +156,66 @@ public class PaymentServiceImpl implements PaymentService{
 }
 
   private Payment saveExistingPayment(PaymentRequest request, Course course,
-      Payment existingPayment) {
+      Payment payment) {
     
     double requestAmount = request.getPaymentAmount();
     
-    if(PaymentStatus.COMPLETED.equals(existingPayment.getPaymentStatus())) {
+    if(PaymentStatus.COMPLETED.equals(payment.getPaymentStatus())) {
       throw new IllegalArgumentException("Payment already completed");
     }
     
-    double remaingAmount = course.getAmount() - existingPayment.getPaidAmount();
+    double remaingAmount = course.getAmount() - payment.getPaidAmount();
     
-    int remaiingIntallmentCount = course.getInstallmentCount() - existingPayment.getInstallments().size();
+    int remaiingIntallmentCount = course.getInstallmentCount() - payment.getInstallments().size();
     
     if(remaiingIntallmentCount == 1 ) {
-      if (requestAmount != remaingAmount) {
-        throw new IllegalArgumentException(requestAmount < remaingAmount ? 
-            "Not enough payment amount" : "Overcharging");
+      remainingInstallmentCountIsOne(payment, requestAmount, remaingAmount);
+    } else if(remaiingIntallmentCount > 1) {
+      remainingInstallmentCountIsMoreThanOne(request, payment, requestAmount, remaingAmount,
+          remaiingIntallmentCount);
+    }
+    
+    saveInstallment(false, payment, request.getPaymentAmount());
+
+    return paymentRepository.save(payment);
+  }
+
+  private void remainingInstallmentCountIsOne(Payment existingPayment, double requestAmount,
+      double remaingAmount) {
+    if (requestAmount != remaingAmount) {
+      throw new IllegalArgumentException(requestAmount < remaingAmount ? 
+          "Not enough payment amount" : "Overcharging");
+    }
+    
+    existingPayment.setPaidAmount(existingPayment.getPaidAmount() + remaingAmount);
+    existingPayment.setPaymentStatus(PaymentStatus.COMPLETED);
+    existingPayment.setRemainigInstallmentCount(0);
+  }
+
+  private void remainingInstallmentCountIsMoreThanOne(PaymentRequest request,
+      Payment existingPayment, double requestAmount, double remaingAmount,
+      int remaiingIntallmentCount) {
+    if(!request.isInstallment()) {
+      if(requestAmount !=  remaingAmount) {
+        throw new IllegalArgumentException(remaingAmount > requestAmount ? "payment amount is not enough for full payment" : "over paying");
       }
       
       existingPayment.setPaidAmount(existingPayment.getPaidAmount() + remaingAmount);
       existingPayment.setPaymentStatus(PaymentStatus.COMPLETED);
       existingPayment.setRemainigInstallmentCount(0);
-    } else if(remaiingIntallmentCount > 1) {
-      if(!request.isInstallment()) {
-        if(requestAmount !=  remaingAmount) {
-          throw new IllegalArgumentException(remaingAmount > requestAmount ? "payment amount is not enough for full payment" : "over paying");
-        }
-        
-        existingPayment.setPaidAmount(existingPayment.getPaidAmount() + remaingAmount);
-        existingPayment.setPaymentStatus(PaymentStatus.COMPLETED);
-        existingPayment.setRemainigInstallmentCount(0);
-      } else {
-        if(remaingAmount < requestAmount) {
-          throw new IllegalArgumentException( "over paying");
-        }
-        if(requestAmount != existingPayment.getInstallmentAmount()) {
-          throw new IllegalArgumentException(requestAmount < existingPayment.getInstallmentAmount() ? "Pay the installment amount : " + existingPayment.getInstallmentAmount() : 
-              "over paying");
-        }
-        
-        existingPayment.setRemainigInstallmentCount(--remaiingIntallmentCount);
-        existingPayment.setPaidAmount( existingPayment.getPaidAmount() + existingPayment.getInstallmentAmount());
-        existingPayment.setPaymentStatus(PaymentStatus.PENDING);
+    } else {
+      if(remaingAmount < requestAmount) {
+        throw new IllegalArgumentException( "over paying");
       }
+      if(requestAmount != existingPayment.getInstallmentAmount()) {
+        throw new IllegalArgumentException(requestAmount < existingPayment.getInstallmentAmount() ? "Pay the installment amount : " + existingPayment.getInstallmentAmount() : 
+            "over paying");
+      }
+      
+      existingPayment.setRemainigInstallmentCount(--remaiingIntallmentCount);
+      existingPayment.setPaidAmount( existingPayment.getPaidAmount() + existingPayment.getInstallmentAmount());
+      existingPayment.setPaymentStatus(PaymentStatus.PENDING);
     }
-    
-    Installment installment = new Installment();
-    installment.setPayment(existingPayment);
-    installment.setPaymentAmount(request.getPaymentAmount());
-    installment.setPaymentDate(LocalDateTime.now());
-    
-    existingPayment.getInstallments().add(installment);
-
-    return paymentRepository.save(existingPayment);
   }
 
 }

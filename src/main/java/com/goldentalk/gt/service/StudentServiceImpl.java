@@ -7,11 +7,13 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import com.goldentalk.gt.dto.CreateStudentRequestDto;
-import com.goldentalk.gt.dto.CreateStudentResponseDto;
+import org.springframework.util.Assert;
+import com.goldentalk.gt.dto.CreateAndUpdateStudentRequest;
+import com.goldentalk.gt.dto.CreateAndUpdateStudentResponse;
 import com.goldentalk.gt.dto.InstallmentDTO;
 import com.goldentalk.gt.dto.PaymentDetailsDTO;
 import com.goldentalk.gt.dto.StudentResponseDto;
+import com.goldentalk.gt.entity.Address;
 import com.goldentalk.gt.entity.Course;
 import com.goldentalk.gt.entity.Payment;
 import com.goldentalk.gt.entity.Section;
@@ -38,29 +40,9 @@ public class StudentServiceImpl implements StudentService {
   private PaymentRepository paymentRepository;
 
   @Override
-  public CreateStudentResponseDto createStudent(CreateStudentRequestDto request) {
+  public CreateAndUpdateStudentResponse createStudent(CreateAndUpdateStudentRequest request) {
     Student student = new Student();
-    student.setFirstName(request.getFirstName());
-    student.setLastName(request.getLastName());
-    student.setMiddleName(request.getMiddleName());
-    student.setDob(request.getDob());
-    student.setWhatsappNum(request.getWhatsAppNumber());
-    
-    Set<Section> sections = sectionRepository.findByIdInAndDeleted(request.getSectionId(), false);
-    
-    student.setSections(sections);
-    
-    Set<Course> courses = courseRepository.findByIdInAndIsDeleted(request.getCourseIds(), false);
-    
-    student.setCourses(courses);
-    student.setAddress(request.getAddress());
-   
-    Student stu = studentRepository.save(student);
-    
-    CreateStudentResponseDto response = new CreateStudentResponseDto();
-    response.setStudentId(stu.getStudentId());
-    
-    return response;
+    return saveUpdateStudent(request, student);
   }
 
   @Override
@@ -125,5 +107,65 @@ public class StudentServiceImpl implements StudentService {
     
     return response;
     
+  }
+
+  @Override
+  public CreateAndUpdateStudentResponse updateStudent(String studentId,
+      CreateAndUpdateStudentRequest request) {
+    
+    Assert.hasText(studentId, "Student Id should not be null or Empty");
+    
+    Student student = studentRepository.findByStudentIdAndDeleted(studentId, false);
+    
+    if(student == null) {
+      throw new StudentNotFoundException("Student not found for the id " + studentId);
+    }
+    
+    return saveUpdateStudent(request, student);
+  }
+  
+  private CreateAndUpdateStudentResponse saveUpdateStudent(CreateAndUpdateStudentRequest request,
+      Student student) {
+    student.setFirstName(request.getFirstName());
+    student.setLastName(request.getLastName());
+    student.setMiddleName(request.getMiddleName());
+    student.setDob(request.getDob());
+    student.setWhatsappNum(request.getWhatsAppNumber());
+    
+    Set<Section> sections = sectionRepository.findByIdInAndDeleted(request.getSectionId(), false);
+    
+    student.setSections(sections);
+    
+    Set<Course> courses = courseRepository.findByIdInAndIsDeleted(request.getCourseIds(), false);
+    
+    student.setCourses(courses);
+    
+    Address address = new Address();
+    address.setStreet(request.getAddress().getStreet());
+    address.setCity(request.getAddress().getCity());
+    address.setDistrict(request.getAddress().getDistrict());
+    address.setProvince(request.getAddress().getProvince());
+    
+    student.setAddress(address);
+   
+    Student stu = studentRepository.save(student);
+    
+    CreateAndUpdateStudentResponse response = new CreateAndUpdateStudentResponse();
+    response.setStudentId(stu.getStudentId());
+    response.setInternalId(stu.getInternalId());
+    
+    return response;
+  }
+
+  @Override
+  public boolean deleteStudent(String studentId) {
+    Student student = studentRepository.findByStudentIdAndDeleted(studentId, false);
+    
+    if(student == null) {
+      throw new StudentNotFoundException("Student not found for the id " + studentId);
+    }
+    
+    student.setDeleted(true);
+    return true;
   }
 }

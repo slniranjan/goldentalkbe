@@ -2,12 +2,13 @@ package com.goldentalk.gt.dto;
 
 import java.util.List;
 import com.goldentalk.gt.entity.Address;
+import com.goldentalk.gt.entity.AddressDTO;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class CreateStudentRequestDto {
+public class CreateAndUpdateStudentRequest {
 
   private String firstName;
 
@@ -19,7 +20,7 @@ public class CreateStudentRequestDto {
   
   private String whatsAppNumber;
   
-  private Address address;
+  private AddressDTO address;
   
   private List<Integer> sectionId;
   
