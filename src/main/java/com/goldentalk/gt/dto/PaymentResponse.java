@@ -9,6 +9,8 @@ public class PaymentResponse {
 
   private String paymentId;
   
+  private String installmentId;
+  
   private double amount;
   
 }

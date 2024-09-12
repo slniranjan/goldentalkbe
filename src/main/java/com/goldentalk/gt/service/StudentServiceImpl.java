@@ -1,6 +1,5 @@
 package com.goldentalk.gt.service;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -107,6 +106,7 @@ public class StudentServiceImpl implements StudentService {
       details.setCourseId(pay.getCourse().getCourseId());
       details.setPaymentId(pay.getPaymentId());
       details.setPaymentStatus(pay.getPaymentStatus());
+      details.setPaidAmount(pay.getPaidAmount());
       
       List<InstallmentDTO> installments = pay.getInstallments().stream().map(inst -> {
         InstallmentDTO installmentDto = new InstallmentDTO();

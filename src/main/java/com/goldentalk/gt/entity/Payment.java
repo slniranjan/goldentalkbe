@@ -1,8 +1,11 @@
 package com.goldentalk.gt.entity;
 
 import java.util.Set;
+import com.goldentalk.gt.entity.enums.PaymentStatus;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -20,17 +23,12 @@ public class Payment extends BaseEntity{
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Integer paymentId;
   
-//  private double firstPaymentAmount;
-//  
-//  private LocalDateTime firstPaymentDate;
-//  
-//  private double secondPaymentAmount;
-//  
-//  private LocalDateTime secondPaymentDate;
-  
-  private String paymentStatus;
+  @Enumerated(EnumType.STRING)
+  private PaymentStatus paymentStatus;
   
   private double installmentAmount;
+  
+  private double minimumInstallmentAmount;
   
   private double paidAmount;
   
