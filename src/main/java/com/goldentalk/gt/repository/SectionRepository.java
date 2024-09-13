@@ -9,4 +9,6 @@ public interface SectionRepository extends CrudRepository<Section, Integer>{
 
   Set<Section> findByIdInAndDeleted(List<Integer> sectionId, boolean deleted);
   
+  Set<Section> findByDeleted(boolean deleted);
+  
 }

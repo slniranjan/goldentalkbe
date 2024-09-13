@@ -1,9 +1,12 @@
 package com.goldentalk.gt.service;
 
+import com.goldentalk.gt.dto.RetrieveSectionResponse;
 import com.goldentalk.gt.dto.SectionResponse;
 
 public interface SectionService {
 
-  SectionResponse retrieveSections();
+  RetrieveSectionResponse retrieveSection();
+  
+  SectionResponse retrieveSectionNames();
   
 }
