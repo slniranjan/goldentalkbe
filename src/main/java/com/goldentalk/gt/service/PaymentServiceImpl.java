@@ -166,7 +166,7 @@ public class PaymentServiceImpl implements PaymentService{
     
     double remaingAmount = course.getAmount() - payment.getPaidAmount();
     
-    int remaiingIntallmentCount = course.getInstallmentCount() - payment.getInstallments().size();
+    int remaiingIntallmentCount = payment.getRemainigInstallmentCount();// - payment.getInstallments().size();
     
     if(remaiingIntallmentCount == 1 ) {
       remainingInstallmentCountIsOne(payment, requestAmount, remaingAmount);

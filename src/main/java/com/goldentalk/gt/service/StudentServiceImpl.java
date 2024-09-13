@@ -1,6 +1,7 @@
 package com.goldentalk.gt.service;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -36,8 +37,6 @@ public class StudentServiceImpl implements StudentService {
   private SectionRepository sectionRepository;
   
   private CourseRepository courseRepository;
-  
-  private PaymentRepository paymentRepository;
 
   @Override
   public CreateAndUpdateStudentResponse createStudent(CreateAndUpdateStudentRequest request) {
@@ -54,12 +53,8 @@ public class StudentServiceImpl implements StudentService {
       throw new StudentNotFoundException("Student not found for the id " + studentId);
     }
     List<Payment> payments = Collections.emptyList();
-    if(!student.getCourses().isEmpty()) {
-      List<Integer> courseIds = student.getCourses().stream().map(c -> c.getId()).toList();
-      
-      Set<Course> courses = courseRepository.findByIdInAndIsDeleted(courseIds, false);
-      
-      payments = paymentRepository.findByStudentAndCourseIn(student, courses);
+    if(!student.getCourses().isEmpty()) { 
+      payments = student.getPayments().stream().collect(Collectors.toList());
     }
     
     return transformStudentToStudnetResponDto(student, payments);

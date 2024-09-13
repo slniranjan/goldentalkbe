@@ -9,6 +9,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
@@ -37,7 +38,7 @@ public class Payment extends BaseEntity{
   @ManyToOne
   private Student student;
   
-  @OneToOne
+  @ManyToOne
   private Course course;
   
   @OneToMany(mappedBy = "payment", cascade = CascadeType.ALL)

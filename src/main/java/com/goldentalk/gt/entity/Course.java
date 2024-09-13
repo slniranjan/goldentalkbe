@@ -47,8 +47,8 @@ public class Course extends BaseEntity {
 //  @OneToMany(mappedBy = "course")
 //  private Set<Payment> payments;
   
-  @OneToOne
-  private Payment payment;
+//  @OneToOne
+//  private Payment payment;
   
   private boolean isDeleted;
   
