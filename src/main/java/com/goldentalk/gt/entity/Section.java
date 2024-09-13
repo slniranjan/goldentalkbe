@@ -12,7 +12,7 @@ import lombok.Setter;
 
 @Entity
 @Getter @Setter
-public class Section extends BaseEntity {
+public class Section {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +28,7 @@ public class Section extends BaseEntity {
   
   @OneToMany(mappedBy = "section" )
   private Set<Course> courses;
-  
+
   private boolean deleted;
- 
+
 }
