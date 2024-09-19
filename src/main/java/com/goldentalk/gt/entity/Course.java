@@ -1,39 +1,41 @@
 package com.goldentalk.gt.entity;
 
 import java.util.Set;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.SequenceGenerator;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Check;
+import org.hibernate.validator.constraints.UniqueElements;
 
 @Entity
 @Getter @Setter
 public class Course extends BaseEntity {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "course_seq_gen")
-  @SequenceGenerator(name = "course_seq_gen", sequenceName = "course_id_seq", allocationSize = 1)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+//  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "course_seq_gen")
+//  @SequenceGenerator(name = "course_seq_gen", sequenceName = "course_id_seq", allocationSize = 1)
   private Integer id;
-  
-  private String courseId;
-  
+
+/*  @NotNull
+  @Column(unique = true)
+  private String courseId;*/
+
+  @NotNull
   private String category;
-  
+
+  @NotNull
   private String name;
-  
+
+  @NotNull
   private boolean isInstallment;
-  
-  private int installmentCount;
-  
-  private double amount;
+
+  @Min(1000)
+  private double fee;
   
   @ManyToOne
   private Section section;
@@ -52,8 +54,8 @@ public class Course extends BaseEntity {
   
   private boolean isDeleted;
   
-  @PrePersist
+  /*@PrePersist
   private void generateStudentId() {
-    this.courseId = String.format("COURSE%05d", this.id);
-  }
+    this.courseId = String.format("CRS%05d", this.id);
+  }*/
 }

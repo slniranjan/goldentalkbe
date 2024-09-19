@@ -1,9 +1,12 @@
 INSERT INTO public.section(section_name, deleted)
-	VALUES ('IELTS',false);
+	VALUES ('IELTS',false)
+	ON CONFLICT (section_name) DO NOTHING;
 INSERT INTO public.section(section_name, deleted)
-	VALUES ('PTE',false);
+	VALUES ('PTE',false)
+	ON CONFLICT (section_name) DO NOTHING;
 INSERT INTO public.section(section_name, deleted)
-	VALUES ('OET',false);
+	VALUES ('OET',false)
+	ON CONFLICT (section_name) DO NOTHING;
 
 --INSERT INTO public.course(
 --	amount,installment_count, is_installment, section_id, teacher_teacher_id, created_at, update_at, category, created_by, name, updated_by)

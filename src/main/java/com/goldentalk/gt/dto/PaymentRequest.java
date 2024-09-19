@@ -1,15 +1,15 @@
 package com.goldentalk.gt.dto;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 public class PaymentRequest {
 
   private String studentId;
   
-  private String courseId;
+  private Integer id;
   
   private double paymentAmount;
   

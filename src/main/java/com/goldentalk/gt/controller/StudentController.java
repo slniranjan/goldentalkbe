@@ -19,7 +19,7 @@ import com.goldentalk.gt.service.StudentService;
 import lombok.AllArgsConstructor;
 
 @RestController
-@RequestMapping("/api/student")
+@RequestMapping("/api/v1/students")
 @AllArgsConstructor
 public class StudentController {
   

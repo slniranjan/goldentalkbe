@@ -1,20 +1,14 @@
 package com.goldentalk.gt.service;
 
-import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.Set;
+import com.goldentalk.gt.exception.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import com.goldentalk.gt.dto.PaymentRequest;
 import com.goldentalk.gt.dto.PaymentResponse;
 import com.goldentalk.gt.entity.Course;
-import com.goldentalk.gt.entity.Installment;
 import com.goldentalk.gt.entity.Payment;
 import com.goldentalk.gt.entity.Student;
-import com.goldentalk.gt.entity.enums.PaymentStatus;
-import com.goldentalk.gt.exception.CourseNotFoundException;
-import com.goldentalk.gt.exception.StudentNotFoundException;
 import com.goldentalk.gt.repository.CourseRepository;
 import com.goldentalk.gt.repository.PaymentRepository;
 import com.goldentalk.gt.repository.StudentRepository;
@@ -39,37 +33,37 @@ public class PaymentServiceImpl implements PaymentService{
     Student student = studentRepository.findByStudentIdAndDeleted(request.getStudentId(), false);
     
     if(student == null) {
-      throw new StudentNotFoundException("Student not found for the id " + request.getStudentId());
+      throw new NotFoundException("Student not found for the id " + request.getStudentId());
     }
     
-    Course course = courseRepository.findByCourseIdAndIsDeleted(request.getCourseId(), false);
+    Course course = courseRepository.findByIdAndIsDeleted(request.getId(), false);
 
     if(course == null) {
-      throw new CourseNotFoundException("Course not found for the id : " + request.getCourseId());
+      throw new NotFoundException("Course not found for the id : " + request.getId());
     }
 
     payment = paymentRepository.findByCourseAndStudent(course, student);
     
     if(payment != null) {
-      payment = saveExistingPayment(request, course, payment);
+//      payment = saveExistingPayment(request, course, payment);
     } else {
-      payment = saveNewPyament(request, payment, student, course);
+//      payment = saveNewPyament(request, payment, student, course);
     }
 
-    String installmentId = payment.getInstallments().stream()
-        .sorted(Comparator.comparingInt(Installment::getId).reversed())
-        .map(i -> i.getId().toString()).findFirst().get();
-    
-    return new PaymentResponse(payment.getPaymentId().toString(), installmentId , request.getPaymentAmount());
+//    String installmentId = payment.getInstallments().stream()
+//        .sorted(Comparator.comparingInt(Installment::getId).reversed())
+//        .map(i -> i.getId().toString()).findFirst().get();
+    // TODO
+    return new PaymentResponse(payment.getPaymentId().toString(), "installmentId" , request.getPaymentAmount());
   }
 
-  private Payment saveNewPyament(PaymentRequest request, Payment payment, Student student,
+  /*private Payment saveNewPyament(PaymentRequest request, Payment payment, Student student,
       Course course) {
     payment = new Payment();
     
     double courseAmount = course.getAmount();
     double requestAmount = request.getPaymentAmount();
-    double minimumInstallmentAmount = course.getAmount() / course.getInstallmentCount();;
+    double minimumInstallmentAmount = course.getAmount() / course.getAllowedInstallment();
     if(!course.isInstallment() || !request.isInstallment()) {
       if(courseAmount != requestAmount) {
         throw new IllegalArgumentException(courseAmount > requestAmount
@@ -95,9 +89,9 @@ public class PaymentServiceImpl implements PaymentService{
     
     return paymentRepository.save(payment);
     
-  }
+  }*/
   
-  private void saveInstallment(boolean newPayment, Payment payment, double payingAmount) {
+  /*private void saveInstallment(boolean newPayment, Payment payment, double payingAmount) {
     Installment installment = new Installment();
     installment.setPayment(payment);
     installment.setPaymentAmount(payingAmount);
@@ -109,9 +103,9 @@ public class PaymentServiceImpl implements PaymentService{
       payment.getInstallments().add(installment);
     }
 
-  }
+  }*/
 
-  private void installmentPaymentForNewPayments(PaymentRequest request, Payment payment,
+  /*private void installmentPaymentForNewPayments(PaymentRequest request, Payment payment,
       Course course, double courseAmount, double requestAmount, double minimumInstallmentAmount) {
     double installmentAmount;
     if (courseAmount < requestAmount) {
@@ -121,7 +115,7 @@ public class PaymentServiceImpl implements PaymentService{
     validateInstallmentCount(request, course);  // Extracted validation logic for installment count
 
     // Calculate installment amount
-    if (request.getInstallmentCount() == course.getInstallmentCount()) {
+    if (request.getInstallmentCount() == course.getAllowedInstallment()) {
         installmentAmount = minimumInstallmentAmount;
     } else {
         installmentAmount = courseAmount / request.getInstallmentCount();
@@ -136,16 +130,16 @@ public class PaymentServiceImpl implements PaymentService{
     validateInstallmentAmount(installmentAmount, requestAmount, minimumInstallmentAmount);
     
     payment.setRemainigInstallmentCount(request.getInstallmentCount() - 1);
-  }
+  }*/
   
-  private void validateInstallmentCount(PaymentRequest request, Course course) {
+  /*private void validateInstallmentCount(PaymentRequest request, Course course) {
     int requestInstallmentCount = request.getInstallmentCount();
-    int courseInstallmentCount = course.getInstallmentCount();
+    int courseInstallmentCount = course.getAllowedInstallment();
     
     if (requestInstallmentCount > courseInstallmentCount || requestInstallmentCount <= 0) {
         throw new IllegalArgumentException("Invalid installment count");
     }
-  }
+  }*/
   
   private void validateInstallmentAmount(double installmentAmount, double requestAmount, double minimumInstallmentAmount) {
     if (installmentAmount > requestAmount) {
@@ -155,7 +149,7 @@ public class PaymentServiceImpl implements PaymentService{
     }
 }
 
-  private Payment saveExistingPayment(PaymentRequest request, Course course,
+  /*private Payment saveExistingPayment(PaymentRequest request, Course course,
       Payment payment) {
     
     double requestAmount = request.getPaymentAmount();
@@ -178,21 +172,21 @@ public class PaymentServiceImpl implements PaymentService{
     saveInstallment(false, payment, request.getPaymentAmount());
 
     return paymentRepository.save(payment);
-  }
+  }*/
 
-  private void remainingInstallmentCountIsOne(Payment existingPayment, double requestAmount,
+  /*private void remainingInstallmentCountIsOne(Payment existingPayment, double requestAmount,
       double remaingAmount) {
     if (requestAmount != remaingAmount) {
-      throw new IllegalArgumentException(requestAmount < remaingAmount ? 
+      throw new IllegalArgumentException(requestAmount < remaingAmount ?
           "Not enough payment amount" : "Overcharging");
     }
-    
+
     existingPayment.setPaidAmount(existingPayment.getPaidAmount() + remaingAmount);
     existingPayment.setPaymentStatus(PaymentStatus.COMPLETED);
     existingPayment.setRemainigInstallmentCount(0);
-  }
+  }*/
 
-  private void remainingInstallmentCountIsMoreThanOne(PaymentRequest request,
+  /*private void remainingInstallmentCountIsMoreThanOne(PaymentRequest request,
       Payment existingPayment, double requestAmount, double remaingAmount,
       int remaiingIntallmentCount) {
     if(!request.isInstallment()) {
@@ -216,6 +210,6 @@ public class PaymentServiceImpl implements PaymentService{
       existingPayment.setPaidAmount( existingPayment.getPaidAmount() + existingPayment.getInstallmentAmount());
       existingPayment.setPaymentStatus(PaymentStatus.PENDING);
     }
-  }
+  }*/
 
 }

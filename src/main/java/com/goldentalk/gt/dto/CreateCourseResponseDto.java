@@ -7,5 +7,5 @@ import lombok.Setter;
 @Setter
 public class CreateCourseResponseDto {
 
-  String courseId;
+  Integer id;
 }

@@ -1,48 +1,45 @@
 package com.goldentalk.gt.entity;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 import com.goldentalk.gt.entity.enums.PaymentStatus;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Getter @Setter
 public class Payment extends BaseEntity{
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer paymentId;
   
   @Enumerated(EnumType.STRING)
   private PaymentStatus paymentStatus;
-  
-  private double installmentAmount;
-  
-  private double minimumInstallmentAmount;
-  
-  private double paidAmount;
-  
-  private int remainigInstallmentCount;
-  
+
+  @NotNull
+  private double firstPaymentAmount;
+
+  private double secondPaymentAmount;
+
+  @CreationTimestamp
+  private LocalDateTime firstPaymentDate;
+
+  @UpdateTimestamp
+  private LocalDateTime secondPaymentDate;
+
   @ManyToOne
   private Student student;
   
   @ManyToOne
   private Course course;
   
-  @OneToMany(mappedBy = "payment", cascade = CascadeType.ALL)
-  private Set<Installment> installments;
+  /*@OneToMany(mappedBy = "payment", cascade = CascadeType.ALL)
+  private Set<Installment> installments;*/
   
   private boolean deleted;
 }

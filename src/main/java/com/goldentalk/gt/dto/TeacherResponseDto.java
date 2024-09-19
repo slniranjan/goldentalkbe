@@ -2,11 +2,14 @@ package com.goldentalk.gt.dto;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
-@Setter
+@Data
+@Builder
 public class TeacherResponseDto {
 
   private String name;
@@ -15,6 +18,6 @@ public class TeacherResponseDto {
   
   private String section;
   
-  private List<String> courseNames = new ArrayList<String>();
+  private List<String> courseNames;
   
 }

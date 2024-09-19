@@ -1,6 +1,8 @@
 package com.goldentalk.gt.dto;
 
 import java.time.LocalDateTime;
+
+import lombok.Builder;
 import org.springframework.http.HttpStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -8,6 +10,7 @@ import lombok.Data;
 
 @AllArgsConstructor
 @Data
+@Builder
 @Schema(
     name="ErrorResponse",
     description = "Schema to hold error response information"
@@ -22,7 +25,7 @@ public class ErrorResponseDto {
   @Schema(
       description =  "Error response code"
   )
-  private HttpStatus errorCode;
+  private int errorCode;
   
   @Schema(
       description =  "Error Message"

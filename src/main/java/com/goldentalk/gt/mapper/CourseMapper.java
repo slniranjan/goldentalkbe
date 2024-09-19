@@ -7,6 +7,7 @@ import com.goldentalk.gt.entity.Course;
 @Mapper
 public interface CourseMapper {
 
-  CourseResponseDto courseToCourseDto(Course course);
+  CourseResponseDto toDto(Course course);
+  Course toEntity(CourseResponseDto dto);
   
 }

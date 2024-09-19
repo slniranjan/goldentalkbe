@@ -2,11 +2,11 @@ package com.goldentalk.gt.dto;
 
 import java.util.List;
 import com.goldentalk.gt.entity.AddressDTO;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 public class CreateAndUpdateStudentRequest {
 
   private String firstName;

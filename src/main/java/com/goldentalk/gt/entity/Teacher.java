@@ -21,11 +21,9 @@ import lombok.Setter;
 public class Teacher extends BaseEntity{
 
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "teacher_seq_gen")
-  @SequenceGenerator(name = "teacher_seq_gen", sequenceName = "teacher_id_seq", allocationSize = 1)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+//  @SequenceGenerator(name = "teacher_seq_gen", sequenceName = "teacher_id_seq", allocationSize = 1)
   private Integer id;
-  
-  private String teacherId;
   
   private String name;
   
@@ -44,9 +42,9 @@ public class Teacher extends BaseEntity{
   
   private boolean isDeleted;
   
-  @PrePersist
+  /*@PrePersist
   private void generateStudentId() {
     this.teacherId = String.format("TEA%05d", this.id);
-  }
+  }*/
   
 }

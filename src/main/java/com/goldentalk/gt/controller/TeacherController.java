@@ -22,66 +22,92 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 
+import java.util.List;
+
 @Tag(
-    name = "CRUD REST APIs for Teacher",
-    description = "CRUD REST APIs to CREATE, UPDATE, FETCH AND DELETE teacher details"
+        name = "CRUD REST APIs for Teacher",
+        description = "CRUD REST APIs to CREATE, UPDATE, FETCH AND DELETE teacher details"
 )
 @RestController
-@RequestMapping("/api/teacher")
+@RequestMapping("/api/v1/teachers")
 @AllArgsConstructor
 public class TeacherController {
 
-  private static final Logger logger = LoggerFactory.getLogger(TeacherController.class);
-  
-  private TeacherService teacherService;
-  
-  @Operation(
-      summary = "Create Teacher REST API",
-      description = "REST API to create new Teacher"
-  )
-  @ApiResponses({
-        @ApiResponse(
-                responseCode = "201",
-                description = "HTTP Status CREATED"
-        ),
-        @ApiResponse(
-                responseCode = "400",
-                description = "HTTP Status bad request",
-                content = @Content(
-                        schema = @Schema(implementation = ErrorResponseDto.class)
-                )
-        )
-  }
-  )
-  @PostMapping()
-  @ResponseStatus(code = HttpStatus.CREATED)
-  public void createTeacher(@RequestBody TeacherRequestDto request) {
-    logger.info("Create teacher. ");
-    teacherService.createTeacher(request);
-    logger.info("create teacher done");
-  }
-  
-  @Operation(
-      summary = "Get Teacher REST API",
-      description = "REST API to Get Teacher by teacherid"
-  )
-  @ApiResponses({
-        @ApiResponse(
-                responseCode = "200",
-                description = "HTTP Status OK"
-        ),
-        @ApiResponse(
-                responseCode = "400",
-                description = "HTTP Status bad request",
-                content = @Content(
-                        schema = @Schema(implementation = ErrorResponseDto.class)
-                )
-        )
-  }
-  )
-  @GetMapping("/{teacher-id}")
-  public TeacherResponseDto retrieveTeacher(@PathVariable("teacher-id") String teacherId) {
+    private static final Logger logger = LoggerFactory.getLogger(TeacherController.class);
 
-    return teacherService.retrieveTeacher(teacherId);
-  }
+    private TeacherService teacherService;
+
+    @Operation(
+            summary = "Create Teacher REST API",
+            description = "REST API to create new Teacher"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "HTTP Status CREATED"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "HTTP Status bad request",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorResponseDto.class)
+                    )
+            )
+    }
+    )
+    @PostMapping()
+    @ResponseStatus(code = HttpStatus.CREATED)
+    public void createTeacher(@RequestBody TeacherRequestDto request) {
+        logger.info("Create teacher. ");
+        teacherService.createTeacher(request);
+        logger.info("create teacher done");
+    }
+
+    @Operation(
+            summary = "Get Teacher REST API",
+            description = "REST API to Get Teacher by teacherid"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "HTTP Status OK"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "HTTP Status bad request",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorResponseDto.class)
+                    )
+            )
+    }
+    )
+    @GetMapping("/{teacher-id}")
+    public TeacherResponseDto retrieveTeacher(@PathVariable("teacher-id") Integer teacherId) {
+
+        return teacherService.retrieveTeacher(teacherId);
+    }
+
+    @Operation(
+            summary = "Get All Teachers REST API",
+            description = "REST API to Get All Teachers"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "HTTP Status OK"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "HTTP Status bad request",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorResponseDto.class)
+                    )
+            )
+    }
+    )
+    @GetMapping()
+    public List<TeacherResponseDto> retrieveTeacher() {
+
+        return teacherService.retrieveTeachers();
+    }
 }

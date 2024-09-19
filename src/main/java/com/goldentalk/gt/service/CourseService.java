@@ -8,7 +8,7 @@ import com.goldentalk.gt.dto.CreateCourseResponseDto;
 
 public interface CourseService {
 
-  CourseResponseDto retrieveCourse(String courseId);
+  CourseResponseDto retrieveCourse(Integer courseId);
   
   List<CourseResponseDto> retriveAllCourses();
   
@@ -16,5 +16,5 @@ public interface CourseService {
   
   CreateCourseResponseDto createCourse(CreateCourseRequestDto request);
   
-  CourseResponseDto updateCourse(String courseId, CreateCourseRequestDto request);
+  CourseResponseDto updateCourse(Integer id, CreateCourseRequestDto request);
 }

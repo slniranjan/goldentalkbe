@@ -7,8 +7,6 @@ import lombok.Setter;
 @Setter
 public class AddCourseToTeacherRequestDto {
 
-  private String teacherId;
-  
-  private String courseId;
-  
+    private Integer id;
+
 }

@@ -1,27 +1,29 @@
 package com.goldentalk.gt.dto;
 
 import java.util.List;
+
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
+@Builder
 public class CourseResponseDto {
 
-  private String courseId;
+  private Integer id;
   
   private String courseName;
   
   private String teacherName;
   
-  private String teacherId;
+  private Integer teacherId;
   
   private List<String> studentIds;
   
-  private int studnetCount;
+  private int studentCount;
   
-  private double couseFee;
+  private double courseFee;
   
   private boolean isInstallment;
   
-  private int numOfInstallments;
 }

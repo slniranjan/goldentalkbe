@@ -68,10 +68,10 @@ public class Student extends BaseEntity {
 
   @PrePersist
   private void generateStudentId() {
-    this.studentId = String.format("stu%05d", this.id);
-    
+//    this.studentId = String.format("stu%05d", this.id);
+
     String sectionName = sections.stream().findAny().get().getSectionName();
-    this.internalId = String.format(sectionName +"%05d", this.id);
+    this.studentId = String.format(sectionName +"%05d", this.id);
   }
   
 }

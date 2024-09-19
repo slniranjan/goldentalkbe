@@ -14,7 +14,7 @@ import com.goldentalk.gt.service.PaymentService;
 import lombok.AllArgsConstructor;
 
 @RestController
-@RequestMapping(value = "/api/payment")
+@RequestMapping(value = "/api/v1/payments")
 @AllArgsConstructor
 public class PaymentController {
   
