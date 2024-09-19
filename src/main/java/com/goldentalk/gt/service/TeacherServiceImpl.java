@@ -39,14 +39,16 @@ public class TeacherServiceImpl implements TeacherService {
 
         teacher.setSection(section);
 
-        Set<Course> courses = courseRepository.findByIdInAndIsDeleted(request.getCourseIds(), false);
+        Set<Course> courses = null;
 
-        if (courses.isEmpty()) {
-//      throw new CourseNotFoundException("No Course found for the given Ids");
-            teacher.setCourses(null);
+        if (!request.getCourseIds().isEmpty()) {
+            courses = courseRepository.findByIdInAndIsDeleted(request.getCourseIds(), false);
+            if (courses.isEmpty())
+                throw new NotFoundException("Course not found for the given course ids " + request.getCourseIds());
+            teacher.setCourses(courses);
         }
 
-        teacher.setCourses(courses);
+        teacher.setCourses(null);
 
         request.getQualifications().forEach(q -> {
             Qualification qa = new Qualification();
@@ -62,21 +64,24 @@ public class TeacherServiceImpl implements TeacherService {
 
         Teacher savedTeacher = teacherRepository.save(teacher);
 
-        courses.forEach(c -> {
-            c.setTeacher(savedTeacher);
-            courseRepository.save(c);
-        });
-
+        if (!request.getCourseIds().isEmpty()) {
+            courses.forEach(c -> {
+                c.setTeacher(savedTeacher);
+                courseRepository.save(c);
+            });
+        }
     }
 
     @Override
     public TeacherResponseDto retrieveTeacher(Integer teacherId) {
         Optional<Teacher> teacher = teacherRepository.findById(teacherId);
-//        Teacher teacher = teacherRepository.findById(teacherId);
+
+        if (teacher.isEmpty())
+            throw new NotFoundException("Teacher not found for the given id " + teacherId);
 
         return TeacherResponseDto.builder()
                 .name(teacher.get().getName())
-//                .teacherId(teacher.getId())
+                .id(teacher.get().getId())
                 .courseNames(extracted(teacher.get().getCourses()))
                 .section(teacher.get().getSection().getSectionName())
                 .build();
@@ -90,7 +95,7 @@ public class TeacherServiceImpl implements TeacherService {
         teachers.forEach(teacher -> {
             TeacherResponseDto build = TeacherResponseDto.builder()
                     .name(teacher.getName())
-//                    .teacherId(teacher.getTeacherId())
+                    .id(teacher.getId())
                     .section(teacher.getSection().getSectionName())
                     .courseNames(extracted(teacher.getCourses()))
                     .build();

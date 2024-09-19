@@ -2,6 +2,7 @@ package com.goldentalk.gt.exception;
 
 import com.goldentalk.gt.dto.ErrorResponseDto;
 import org.springframework.core.annotation.Order;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -74,4 +75,38 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(errorResponseDTO, HttpStatus.CONFLICT);
     }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponseDto> handleDataIntegrityViolationException(DataIntegrityViolationException ex, WebRequest reqeust) {
+        String message;
+
+        if (ex.getRootCause() instanceof org.hibernate.exception.ConstraintViolationException) {
+            // Handle constraint violations, e.g., unique constraints
+            message = "Database constraint violation: " + getRootCauseMessage(ex);
+        } else {
+            message = "Data integrity violation: " + getRootCauseMessage(ex);
+        }
+
+        Map<String, String> response = new HashMap<>();
+        response.put("error", message);
+
+        ErrorResponseDto errorResponseDTO = ErrorResponseDto.builder()
+                .apiPath(reqeust.getDescription(false))
+                .errorMessage(message)
+                .errorCode(HttpStatus.CONFLICT.value())
+                .errorTime(LocalDateTime.now()).build();
+
+        return new ResponseEntity<>(errorResponseDTO, HttpStatus.CONFLICT);
+    }
+
+    // Helper method to extract the root cause message
+    private String getRootCauseMessage(Throwable ex) {
+        Throwable rootCause = ex;
+        while (rootCause.getCause() != null && rootCause != rootCause.getCause()) {
+            rootCause = rootCause.getCause();
+        }
+        return rootCause.getMessage();
+    }
+
+
 }

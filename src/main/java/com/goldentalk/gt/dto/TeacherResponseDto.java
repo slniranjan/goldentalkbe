@@ -14,7 +14,7 @@ public class TeacherResponseDto {
 
   private String name;
   
-  private String teacherId;
+  private Integer id;
   
   private String section;
   
