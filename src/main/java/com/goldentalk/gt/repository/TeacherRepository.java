@@ -1,11 +1,12 @@
 package com.goldentalk.gt.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.CrudRepository;
 import com.goldentalk.gt.entity.Teacher;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
 
 public interface TeacherRepository extends JpaRepository<Teacher, Integer> {
 
-  Teacher findByIdAndIsDeleted(Integer teacherId, boolean isDeleted);
-  
+    Optional<Teacher> findByIdAndIsDeleted(Integer teacherId, boolean isDeleted);
+
 }

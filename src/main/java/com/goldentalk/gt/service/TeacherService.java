@@ -8,11 +8,13 @@ import java.util.List;
 
 public interface TeacherService {
 
-  @Transactional
-  void createTeacher(TeacherRequestDto request);
-  
-  TeacherResponseDto retrieveTeacher(Integer teacherId);
+    @Transactional
+    Integer createTeacher(TeacherRequestDto request);
 
-  List<TeacherResponseDto> retrieveTeachers();
+    TeacherResponseDto retrieveTeacher(Integer teacherId);
+
+    List<TeacherResponseDto> retrieveTeachers();
+
+    void updateTeacher(Integer id, TeacherRequestDto request);
 
 }

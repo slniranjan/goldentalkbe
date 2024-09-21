@@ -48,11 +48,11 @@ public class CourseController {
             )
     }
     )
-    @PutMapping("/teacherUpdate")
+    @PatchMapping("/{courseId}/teachers/{teacherId}")
     @ResponseStatus(value = HttpStatus.CREATED)
-    public CourseResponseDto updateCourseForTheTeacher(@RequestBody AddCourseToTeacherRequestDto request) {
+    public CourseResponseDto updateCourseForTheTeacher(@PathVariable Integer courseId, @PathVariable Integer teacherId) {
 
-        return courseService.addCourseToTeacher(request);
+        return courseService.addCourseToTeacher(courseId, teacherId);
 
     }
 

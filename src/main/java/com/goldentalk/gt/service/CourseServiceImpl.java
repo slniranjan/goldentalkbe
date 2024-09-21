@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 
 import com.goldentalk.gt.exception.*;
 import org.springframework.stereotype.Service;
-import com.goldentalk.gt.dto.AddCourseToTeacherRequestDto;
 import com.goldentalk.gt.dto.CourseResponseDto;
 import com.goldentalk.gt.dto.CreateCourseRequestDto;
 import com.goldentalk.gt.dto.CreateCourseResponseDto;
@@ -29,31 +28,21 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public CourseResponseDto retrieveCourse(Integer id) {
-//    public CourseResponseDto retrieveCourse(String courseId) {
 
-        Course course = courseRepository.findByIdAndIsDeleted(id, false);
-
-        if (course == null) {
-            throw new NotFoundException("Course Not found for the id " + id);
-        }
+        Course course = courseRepository.findByIdAndIsDeleted(id, false)
+                .orElseThrow(() -> new NotFoundException("Course Not found for the id " + id));
 
         return transformCourseToResponse(course);
     }
 
     @Override
-    public CourseResponseDto addCourseToTeacher(AddCourseToTeacherRequestDto request) {
+    public CourseResponseDto addCourseToTeacher(Integer courseId, Integer teacherId) {
 
-        Course course = courseRepository.findByIdAndIsDeleted(request.getId(), false);
+        Course course = courseRepository.findByIdAndIsDeleted(courseId, false)
+                .orElseThrow(() -> new NotFoundException("Course Not found for the id " + courseId));
 
-        if (course == null) {
-            throw new NotFoundException("Course Not found for the id " + request.getId());
-        }
-
-        Teacher teacher = teacherRepository.findByIdAndIsDeleted(request.getId(), false);
-
-        if (teacher == null) {
-            throw new NotFoundException("Teacher not found for the id " + request.getId());
-        }
+        Teacher teacher = teacherRepository.findByIdAndIsDeleted(teacherId, false)
+                .orElseThrow(() -> new NotFoundException("Teacher not found for the id " + teacherId));
 
         course.setTeacher(teacher);
         Course persistedCourse = courseRepository.save(course);
@@ -77,6 +66,7 @@ public class CourseServiceImpl implements CourseService {
 
         return CourseResponseDto.builder()
                 .id(course.getId())
+                .category(course.getCategory())
                 .courseName(course.getName())
                 .courseFee(course.getFee())
                 .isInstallment(course.isInstallment())
@@ -127,13 +117,11 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public CourseResponseDto updateCourse(Integer id, CreateCourseRequestDto request) {
-        Course course = courseRepository.findByIdAndIsDeleted(id, false);
+        Course course = courseRepository.findByIdAndIsDeleted(id, false)
+                .orElseThrow(() -> new NotFoundException("Course not found for the id " + id));
 
-        if (course == null) {
-            throw new NotFoundException("Course not found for the id " + id);
-        }
-
-        Section section = sectionRepository.findById(request.getSectionId()).orElseThrow(() -> new NotFoundException("Section Not found for the id " + request.getSectionId()));
+        Section section = sectionRepository.findById(request.getSectionId())
+                .orElseThrow(() -> new NotFoundException("Section Not found for the id " + request.getSectionId()));
 
         return transformCourseToResponse(updateCourse(course, request, section));
     }

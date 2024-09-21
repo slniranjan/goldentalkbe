@@ -36,11 +36,8 @@ public class PaymentServiceImpl implements PaymentService{
       throw new NotFoundException("Student not found for the id " + request.getStudentId());
     }
     
-    Course course = courseRepository.findByIdAndIsDeleted(request.getId(), false);
-
-    if(course == null) {
-      throw new NotFoundException("Course not found for the id : " + request.getId());
-    }
+    Course course = courseRepository.findByIdAndIsDeleted(request.getId(), false)
+            .orElseThrow(() -> new NotFoundException("Course Not found for the id " + request.getId()));
 
     payment = paymentRepository.findByCourseAndStudent(course, student);
     

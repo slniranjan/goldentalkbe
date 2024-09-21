@@ -12,8 +12,10 @@ public class CourseResponseDto {
 
   private Integer id;
   
+  private String category;
+
   private String courseName;
-  
+
   private String teacherName;
   
   private Integer teacherId;

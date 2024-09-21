@@ -26,9 +26,11 @@ public class TeacherRequestDto {
   @NotBlank
   @Size(min = 10, max = 10)
   private String phoneNumber;
-  
+
+  @NotNull
   private Integer sectionId;
-  
+
+  @NotNull
   private List<Integer> courseIds;
   
   private List<TeacherQualificationDTO> qualifications;

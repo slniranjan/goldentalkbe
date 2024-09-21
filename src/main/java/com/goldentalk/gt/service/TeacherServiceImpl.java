@@ -3,6 +3,7 @@ package com.goldentalk.gt.service;
 import java.util.*;
 
 import com.goldentalk.gt.exception.NotFoundException;
+import com.goldentalk.gt.mapper.TeacherMapper;
 import org.springframework.stereotype.Service;
 import com.goldentalk.gt.dto.TeacherRequestDto;
 import com.goldentalk.gt.dto.TeacherResponseDto;
@@ -20,13 +21,12 @@ import lombok.AllArgsConstructor;
 public class TeacherServiceImpl implements TeacherService {
 
     private SectionRepository sectionRepository;
-
     private CourseRepository courseRepository;
-
     private TeacherRepository teacherRepository;
+    private TeacherMapper teacherMapper;
 
     @Override
-    public void createTeacher(TeacherRequestDto request) {
+    public Integer createTeacher(TeacherRequestDto request) {
 
         Teacher teacher = new Teacher();
         teacher.setName(request.getName());
@@ -70,46 +70,48 @@ public class TeacherServiceImpl implements TeacherService {
                 courseRepository.save(c);
             });
         }
+
+        return savedTeacher.getId();
     }
 
     @Override
     public TeacherResponseDto retrieveTeacher(Integer teacherId) {
-        Optional<Teacher> teacher = teacherRepository.findById(teacherId);
 
-        if (teacher.isEmpty())
-            throw new NotFoundException("Teacher not found for the given id " + teacherId);
+        Teacher teacher = teacherRepository.findById(teacherId)
+                .orElseThrow(() -> new NotFoundException("Teacher not found for the given id " + teacherId));
 
-        return TeacherResponseDto.builder()
-                .name(teacher.get().getName())
-                .id(teacher.get().getId())
-                .courseNames(extracted(teacher.get().getCourses()))
-                .section(teacher.get().getSection().getSectionName())
-                .build();
+        return teacherMapper.toDto(teacher);
     }
 
     @Override
     public List<TeacherResponseDto> retrieveTeachers() {
+
         Iterable<Teacher> teachers = teacherRepository.findAll();
         List<TeacherResponseDto> dto = new ArrayList<>();
 
         teachers.forEach(teacher -> {
-            TeacherResponseDto build = TeacherResponseDto.builder()
-                    .name(teacher.getName())
-                    .id(teacher.getId())
-                    .section(teacher.getSection().getSectionName())
-                    .courseNames(extracted(teacher.getCourses()))
-                    .build();
-            dto.add(build);
+            dto.add(teacherMapper.toDto(teacher));
         });
 
         return dto;
     }
 
-    private static List<String> extracted(Set<Course> set) {
-        ArrayList<String> names = new ArrayList<>();
-        set.forEach(c -> names.add(c.getName()));
+    @Override
+    public void updateTeacher(Integer id, TeacherRequestDto request) {
+        Section section = sectionRepository
+                .findById(request.getSectionId())
+                .orElseThrow(() -> new NotFoundException("Section Not Found for the given id " + request.getSectionId()));
 
-        return names;
+        teacherRepository.findById(id)
+                .map(existingTeacher -> {
+                    existingTeacher.setName(request.getName());
+                    existingTeacher.setNic(request.getNic());
+                    existingTeacher.setPhoneNumber(request.getPhoneNumber());
+                    existingTeacher.setSection(section);
+                    existingTeacher.setCourses(courseRepository.findByIdInAndIsDeleted(request.getCourseIds(), false));
+                    return teacherRepository.save(existingTeacher);
+                })
+                .orElseThrow(() -> new NotFoundException("Teacher not found for the given id " + id));
     }
 
 }

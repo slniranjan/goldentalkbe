@@ -15,7 +15,6 @@ public class Teacher extends BaseEntity{
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-//  @SequenceGenerator(name = "teacher_seq_gen", sequenceName = "teacher_id_seq", allocationSize = 1)
   private Integer id;
 
   @NotNull
@@ -37,10 +36,5 @@ public class Teacher extends BaseEntity{
   private Set<Course> courses;
   
   private boolean isDeleted;
-  
-  /*@PrePersist
-  private void generateStudentId() {
-    this.teacherId = String.format("TEA%05d", this.id);
-  }*/
-  
+
 }

@@ -1,12 +1,11 @@
 package com.goldentalk.gt.dto;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.goldentalk.gt.entity.Course;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+
+import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
@@ -19,5 +18,5 @@ public class TeacherResponseDto {
   private String section;
   
   private List<String> courseNames;
-  
+
 }

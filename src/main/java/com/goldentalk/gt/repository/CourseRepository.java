@@ -10,7 +10,7 @@ public interface CourseRepository extends CrudRepository<Course, Integer> {
 
   Set<Course> findByIdInAndIsDeleted(List<Integer> id, boolean isDeleted);
   
-  Course findByIdAndIsDeleted(Integer id, boolean isDeleted);
+  Optional<Course> findByIdAndIsDeleted(Integer id, boolean isDeleted);
 
   Optional<Course> findByNameAndIsDeleted(String name, boolean isDeleted);
   
