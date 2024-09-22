@@ -12,6 +12,8 @@ import lombok.*;
 @Entity
 @Data
 @Builder
+@NoArgsConstructor(force = true)
+@AllArgsConstructor
 public class Address extends BaseEntity {
 
   @Id

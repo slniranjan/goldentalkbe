@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,7 +34,7 @@ public class StudentController {
     private StudentService studentService;
 
     @PostMapping
-    public ResponseEntity<CreateAndUpdateStudentResponse> createStudent(@RequestBody CreateAndUpdateStudentRequest request) {
+    public ResponseEntity<CreateAndUpdateStudentResponse> createStudent(@Validated @RequestBody CreateAndUpdateStudentRequest request) {
         logger.info("Creating a student");
 
         CreateAndUpdateStudentResponse student = studentService.createStudent(request);
@@ -50,13 +51,13 @@ public class StudentController {
         return new ResponseEntity<>(student, headers, HttpStatus.CREATED);
     }
 
-    @GetMapping("/{student-id}")
-    public StudentResponseDto retrieveStrudent(@PathVariable("student-id") String studentId) {
+    @GetMapping("/{studentId}")
+    public StudentResponseDto retrieveStrudent(@PathVariable String studentId) {
         return studentService.retrieveStudents(studentId);
     }
 
-    @PutMapping("/{student-id}")
-    public CreateAndUpdateStudentResponse updateStudent(@PathVariable("student-id") String studentId, @RequestBody CreateAndUpdateStudentRequest request) {
+    @PutMapping("/{studentId}")
+    public CreateAndUpdateStudentResponse updateStudent(@PathVariable String studentId, @Validated @RequestBody CreateAndUpdateStudentRequest request) {
 
         return studentService.updateStudent(studentId, request);
     }

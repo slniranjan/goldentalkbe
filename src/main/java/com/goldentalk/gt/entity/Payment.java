@@ -1,42 +1,46 @@
 package com.goldentalk.gt.entity;
 
-import java.time.LocalDateTime;
-import java.util.Set;
 import com.goldentalk.gt.entity.enums.PaymentStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDateTime;
+
 @Entity
-@Getter @Setter
-public class Payment extends BaseEntity{
+@Data
+@Builder
+@NoArgsConstructor(force = true)
+@AllArgsConstructor
+@EqualsAndHashCode(callSuper = false)
+public class Payment extends BaseEntity {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Integer paymentId;
-  
-  @Enumerated(EnumType.STRING)
-  private PaymentStatus paymentStatus;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer paymentId;
 
-  @NotNull
-  private double firstPaymentAmount;
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus paymentStatus;
 
-  private double secondPaymentAmount;
+    @NotNull
+    private double firstPaymentAmount;
 
-  @CreationTimestamp
-  private LocalDateTime firstPaymentDate;
+    private double secondPaymentAmount;
 
-  @UpdateTimestamp
-  private LocalDateTime secondPaymentDate;
+    @CreationTimestamp
+    private LocalDateTime firstPaymentDate;
 
-  @ManyToOne
-  private Student student;
-  
-  @ManyToOne
-  private Course course;
-  
-  private boolean deleted;
+    @UpdateTimestamp
+    private LocalDateTime secondPaymentDate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "student_id")
+    private Student student;
+
+    @ManyToOne
+    private Course course;
+
+    private boolean deleted;
 }

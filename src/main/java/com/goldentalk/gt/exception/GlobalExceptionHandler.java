@@ -22,8 +22,20 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(LowPaymentException.class)
+    public ResponseEntity<ErrorResponseDto> handleLowPaymentExceptions(LowPaymentException exception, WebRequest reqeust) {
+        ErrorResponseDto errorResponseDTO = ErrorResponseDto.builder()
+                .apiPath(reqeust.getDescription(false))
+                .errorMessage(exception.getMessage())
+                .errorCode(HttpStatus.CONFLICT.value())
+                .errorTime(LocalDateTime.now()).build();
+
+        return new ResponseEntity<ErrorResponseDto>(errorResponseDTO, HttpStatus.CONFLICT);
+
+    }
+
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorResponseDto> handleSectionNotFoundExceptionHandler(NotFoundException exception, WebRequest reqeust) {
+    public ResponseEntity<ErrorResponseDto> handleNotFoundExceptions(NotFoundException exception, WebRequest reqeust) {
         ErrorResponseDto errorResponseDTO = ErrorResponseDto.builder()
                 .apiPath(reqeust.getDescription(false))
                 .errorMessage(exception.getMessage())
@@ -35,7 +47,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponseDto> handleIllegalArgumentExceptionHandler(IllegalArgumentException exception, WebRequest reqeust) {
+    public ResponseEntity<ErrorResponseDto> handleIllegalArgumentExceptions(IllegalArgumentException exception, WebRequest reqeust) {
 
         ErrorResponseDto errorResponseDTO = ErrorResponseDto.builder()
                 .apiPath(reqeust.getDescription(false))

@@ -7,9 +7,10 @@ import lombok.*;
 
 @EqualsAndHashCode(callSuper = false)
 @Entity
-//@Getter @Setter @NoArgsConstructor @AllArgsConstructor @ToString
 @Data
 @Builder
+@NoArgsConstructor(force = true)
+@AllArgsConstructor
 public class Student extends BaseEntity {
 
   @Id
@@ -40,7 +41,7 @@ public class Student extends BaseEntity {
   ) 
   private Set<Section> sections;
   
-  @OneToMany(mappedBy = "student")
+  @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
   private Set<Payment> payments;
   
   @ManyToMany

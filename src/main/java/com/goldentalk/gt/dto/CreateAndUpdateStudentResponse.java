@@ -11,5 +11,6 @@ public class CreateAndUpdateStudentResponse {
 
   private Integer id;
   private String studentId;
+  private String message;
 
 }
