@@ -6,12 +6,12 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
+@EqualsAndHashCode(callSuper = false)
 @Entity
-@Getter @Setter @ToString
+@Data
+@Builder
 public class Address extends BaseEntity {
 
   @Id

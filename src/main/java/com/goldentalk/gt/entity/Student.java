@@ -1,26 +1,15 @@
 package com.goldentalk.gt.entity;
 
 import java.util.Set;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.SequenceGenerator;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 
+import jakarta.persistence.*;
+import lombok.*;
+
+@EqualsAndHashCode(callSuper = false)
 @Entity
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @ToString
+//@Getter @Setter @NoArgsConstructor @AllArgsConstructor @ToString
+@Data
+@Builder
 public class Student extends BaseEntity {
 
   @Id
@@ -30,16 +19,14 @@ public class Student extends BaseEntity {
   
   private String studentId;
   
-  private String internalId;
-  
   private String firstName;
   
   private String middleName;
   
   private String lastName;
   
-  private String dob;
-  
+//  private String dob;
+  @Column(unique = true)
   private String whatsappNum;
   
   @ManyToOne(cascade = CascadeType.ALL)
@@ -68,7 +55,6 @@ public class Student extends BaseEntity {
 
   @PrePersist
   private void generateStudentId() {
-//    this.studentId = String.format("stu%05d", this.id);
 
     String sectionName = sections.stream().findAny().get().getSectionName();
     this.studentId = String.format(sectionName +"%05d", this.id);

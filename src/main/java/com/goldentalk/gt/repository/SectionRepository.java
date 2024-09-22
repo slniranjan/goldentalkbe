@@ -10,8 +10,9 @@ import com.goldentalk.gt.entity.Section;
 
 public interface SectionRepository extends JpaRepository<Section, Integer> {
 
-  Set<Section> findByIdInAndDeleted(List<Integer> sectionId, boolean deleted);
-  
+  Optional<Section> findByIdAndIsDeleted(Integer sectionId, boolean deleted);
+//  Set<Section> findByIdInAndDeleted(List<Integer> sectionId, boolean deleted);
+
   Set<Section> findByDeleted(boolean deleted);
 
   Optional<Section> findBySectionNameIgnoreCase(String sectionName);

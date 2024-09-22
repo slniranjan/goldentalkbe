@@ -38,8 +38,5 @@ public class Payment extends BaseEntity{
   @ManyToOne
   private Course course;
   
-  /*@OneToMany(mappedBy = "payment", cascade = CascadeType.ALL)
-  private Set<Installment> installments;*/
-  
   private boolean deleted;
 }

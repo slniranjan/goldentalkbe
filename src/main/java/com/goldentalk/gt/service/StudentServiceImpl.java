@@ -34,8 +34,65 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public CreateAndUpdateStudentResponse createStudent(CreateAndUpdateStudentRequest request) {
-        Student student = new Student();
-        return saveUpdateStudent(request, student);
+        return saveUpdateStudent(request);
+    }
+
+    private CreateAndUpdateStudentResponse saveUpdateStudent(CreateAndUpdateStudentRequest request) {
+        Section section = sectionRepository
+                .findByIdAndIsDeleted(request.getSectionId(), false)
+                .orElseThrow(() -> new NotFoundException("Section Not Found for the given id " + request.getSectionId()));
+
+        courseRepository.findByIdAndSectionAndIsDeleted(request.getCourseId(), section, false)
+                .orElseThrow(() -> new NotFoundException("Course id exists under Section Not Found for the given id " + request.getSectionId()));
+
+        Address address = Address.builder()
+                .street(request.getAddress().getStreet())
+                .city(request.getAddress().getCity())
+                .district(request.getAddress().getDistrict())
+                .province(request.getAddress().getProvince())
+                .build();
+
+
+//        student.setFirstName(request.getFirstName());
+//        student.setLastName(request.getLastName());
+//        student.setMiddleName(request.getMiddleName());
+////        student.setDob(request.getDob());
+//        student.setWhatsappNum(request.getWhatsAppNumber());
+//        student.setSections((Set<Section>) section);
+//        student.setAddress(address);
+
+        Student student = Student.builder()
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .middleName(request.getMiddleName())
+                .whatsappNum(request.getWhatsAppNumber())
+                .sections(Set.of(section))
+                .address(address)
+                .build();
+
+
+//        Set<Course> courses = courseRepository.findByIdInAndIsDeleted(request.getCourseId(), false);
+
+//        student.setCourses(courses);
+
+//        Address address = new Address();
+//        address.setStreet(request.getAddress().getStreet());
+//        address.setCity(request.getAddress().getCity());
+//        address.setDistrict(request.getAddress().getDistrict());
+//        address.setProvince(request.getAddress().getProvince());
+
+
+        Student stu = studentRepository.save(student);
+
+        return CreateAndUpdateStudentResponse.builder()
+                .studentId(stu.getStudentId())
+                .id(stu.getId())
+                .build();
+
+//        CreateAndUpdateStudentResponse response = new CreateAndUpdateStudentResponse();
+//        response.setStudentId(stu.getStudentId());
+//
+//        return response;
     }
 
     @Override
@@ -58,7 +115,6 @@ public class StudentServiceImpl implements StudentService {
         StudentResponseDto response = new StudentResponseDto();
 
         response.setStudentId(student.getStudentId());
-        response.setInternalId(student.getInternalId());
         response.setFirstName(student.getFirstName());
         response.setMiddleName(student.getMiddleName());
         response.setLastName(student.getLastName());
@@ -69,13 +125,13 @@ public class StudentServiceImpl implements StudentService {
     /*Set<String> courseIds = student.getCourses().stream().map(c -> c.getCourseId()).collect(Collectors.toSet());
     response.setCourseIds(courseIds);*/
 
-        response.setDob(student.getDob());
+//        response.setDob(student.getDob());
 
         List<PaymentDetailsDTO> paymentDetails = payments.stream().map(pay -> {
             PaymentDetailsDTO details = new PaymentDetailsDTO();
 
 //      details.setCourseId(pay.getCourse().getCourseId());
-            details.setPaymentId(pay.getPaymentId());
+//            details.setPaymentId(pay.getPaymentId());
             details.setPaymentStatus(pay.getPaymentStatus());
 //      details.setPaidAmount(pay.getPaidAmount());
       
@@ -110,40 +166,7 @@ public class StudentServiceImpl implements StudentService {
             throw new NotFoundException("Student not found for the id " + studentId);
         }
 
-        return saveUpdateStudent(request, student);
-    }
-
-    private CreateAndUpdateStudentResponse saveUpdateStudent(CreateAndUpdateStudentRequest request,
-                                                             Student student) {
-        student.setFirstName(request.getFirstName());
-        student.setLastName(request.getLastName());
-        student.setMiddleName(request.getMiddleName());
-        student.setDob(request.getDob());
-        student.setWhatsappNum(request.getWhatsAppNumber());
-
-        Set<Section> sections = sectionRepository.findByIdInAndDeleted(request.getSectionId(), false);
-
-        student.setSections(sections);
-
-        Set<Course> courses = courseRepository.findByIdInAndIsDeleted(request.getCourseIds(), false);
-
-        student.setCourses(courses);
-
-        Address address = new Address();
-        address.setStreet(request.getAddress().getStreet());
-        address.setCity(request.getAddress().getCity());
-        address.setDistrict(request.getAddress().getDistrict());
-        address.setProvince(request.getAddress().getProvince());
-
-        student.setAddress(address);
-
-        Student stu = studentRepository.save(student);
-
-        CreateAndUpdateStudentResponse response = new CreateAndUpdateStudentResponse();
-        response.setStudentId(stu.getStudentId());
-        response.setInternalId(stu.getInternalId());
-
-        return response;
+        return saveUpdateStudent(request);
     }
 
     @Override

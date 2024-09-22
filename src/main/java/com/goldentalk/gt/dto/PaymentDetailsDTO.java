@@ -10,13 +10,12 @@ import lombok.Setter;
 @Setter
 public class PaymentDetailsDTO {
 
-  private int paymentId;
-  
   private PaymentStatus paymentStatus;
   
   private String courseId;
   
-  private double paidAmount;
-  
-  private Set<InstallmentDTO> installments = new HashSet<InstallmentDTO>();;
+  private double firstPaymentAmount;
+
+  private double secondPaymentAmount;
+
 }
