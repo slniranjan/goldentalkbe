@@ -1,0 +1,402 @@
+{
+	"info": {
+		"_postman_id": "91c76f54-ff27-4123-91af-8945f50b17b2",
+		"name": "gt",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "18453501"
+	},
+	"item": [
+		{
+			"name": "course",
+			"item": [
+				{
+					"name": "give section details for given id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}sections/3",
+							"host": [
+								"{{base_url}}sections"
+							],
+							"path": [
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "1. give section details for given name (ielts,oet,pte)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"console.log(\"Test is running\");\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.globals.set(\"sectionId\", jsonData.id);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}sections/section/oet",
+							"host": [
+								"{{base_url}}sections"
+							],
+							"path": [
+								"section",
+								"oet"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "give all sections details",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}sections",
+							"host": [
+								"{{base_url}}sections"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2. Create a new course(category - simple, seminar, package / installment - true, false)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"category\": \"simple\",\r\n  \"name\": \"1 month\",\r\n  \"fee\": 12120,\r\n  \"sectionId\": {{sectionId}},\r\n  \"isIntallment\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}courses",
+							"host": [
+								"{{base_url}}courses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Assign a teacher for given course",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}courses/2/teachers/2",
+							"host": [
+								"{{base_url}}courses"
+							],
+							"path": [
+								"2",
+								"teachers",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update  a given course(category - simple, seminar, package / installment - true, false)",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"category\": \"simple\",\r\n  \"name\": \"5 month\",\r\n  \"fee\": 1,\r\n  \"sectionId\": {{sectionId}},\r\n  \"isIntallment\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}courses/1",
+							"host": [
+								"{{base_url}}courses"
+							],
+							"path": [
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get course details by course Id. Course Id sample:1",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}courses/1",
+							"host": [
+								"{{base_url}}courses"
+							],
+							"path": [
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all courses",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}courses",
+							"host": [
+								"{{base_url}}courses"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "student",
+			"item": [
+				{
+					"name": "Create a new student",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"firstName\": \"ABC\",\r\n  \"middleName\": \"DEF\",\r\n  \"lastName\": \"ERG\",\r\n  \"whatsAppNumber\": \"+94712917439\",\r\n  \"address\": {\r\n    \"street\": \"FSF\",\r\n    \"city\": \"fsfds\",\r\n    \"district\": \"trt\",\r\n    \"province\": \"ere\"\r\n  },\r\n  \"sectionId\": 3,\r\n  \"courseId\": 1,\r\n  \"payment\": {\r\n    \"firstPaymentAmount\": 12210,\r\n    \"secondPaymentAmount\": 0\r\n  }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}students",
+							"host": [
+								"{{base_url}}students"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get information of given student by student id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}students/OET00001",
+							"host": [
+								"{{base_url}}students"
+							],
+							"path": [
+								"OET00001"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete student by student id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}students/stu00002",
+							"host": [
+								"{{base_url}}students"
+							],
+							"path": [
+								"stu00002"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change student's information by student id",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"firstName\": \"ABC\",\r\n  \"middleName\": \"DEF\",\r\n  \"lastName\": \"ERG\",\r\n  \"dob\": \"1987-3-15\",\r\n  \"whatsAppNumber\": \"1234567890\",\r\n  \"address\": {\r\n    \"street\": \"FSF\",\r\n    \"city\": \"fsfds\",\r\n    \"district\": \"trt\",\r\n    \"province\": \"ere\"\r\n  },\r\n  \"sectionId\": [\r\n    2,3\r\n  ],\r\n  \"courseIds\": [\r\n    1\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}students/stu00002",
+							"host": [
+								"{{base_url}}students"
+							],
+							"path": [
+								"stu00002"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "teacher",
+			"item": [
+				{
+					"name": "Get all teachers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}teachers",
+							"host": [
+								"{{base_url}}teachers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get a teacher by  Teacher's Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}teachers/2",
+							"host": [
+								"{{base_url}}teachers"
+							],
+							"path": [
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create a new Teacher",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"fsfs\",\r\n  \"nic\": \"1234567896\",\r\n  \"phoneNumber\": \"1234567896\",\r\n  \"sectionId\": {{sectionId}},\r\n  \"courseIds\": [\r\n    1,2\r\n  ],\r\n  \"qualifications\": [\r\n    {\r\n      \"qualification\": \"adfs\",\r\n      \"institute\": \"aabc\"\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}teachers",
+							"host": [
+								"{{base_url}}teachers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update given teacher new Teacher",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"fsfs\",\r\n  \"nic\": \"1234657896\",\r\n  \"phoneNumber\": \"7234567896\",\r\n  \"sectionId\": {{sectionId}},\r\n  \"courseIds\": [\r\n    1,2\r\n  ],\r\n  \"qualifications\": [\r\n    {\r\n      \"qualification\": \"adfs\",\r\n      \"institute\": \"aabc\"\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}teachers/1",
+							"host": [
+								"{{base_url}}teachers"
+							],
+							"path": [
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "payment",
+			"item": [
+				{
+					"name": "New Request",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080/gt/api/v1/",
+			"type": "string"
+		}
+	]
+}
