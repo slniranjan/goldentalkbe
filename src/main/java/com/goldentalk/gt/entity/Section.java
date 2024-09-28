@@ -18,7 +18,7 @@ public class Section {
   @Column(name = "section_name", unique=true)
   private String sectionName;
   
-  @ManyToMany(mappedBy = "sections")
+  @ManyToMany(mappedBy = "sections", fetch = FetchType.EAGER)
   private Set<Student> students;
   
   @OneToMany(mappedBy = "section")

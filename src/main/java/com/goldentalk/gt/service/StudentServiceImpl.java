@@ -1,9 +1,22 @@
 package com.goldentalk.gt.service;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import com.goldentalk.gt.dto.CreateAndUpdateStudentRequest;
 import com.goldentalk.gt.dto.CreateAndUpdateStudentResponse;
+import com.goldentalk.gt.dto.PaymentDetailsDTO;
 import com.goldentalk.gt.dto.StudentResponseDto;
-import com.goldentalk.gt.entity.*;
+import com.goldentalk.gt.entity.Address;
+import com.goldentalk.gt.entity.Course;
+import com.goldentalk.gt.entity.Payment;
+import com.goldentalk.gt.entity.Section;
+import com.goldentalk.gt.entity.Student;
 import com.goldentalk.gt.entity.enums.PaymentStatus;
 import com.goldentalk.gt.exception.LowPaymentException;
 import com.goldentalk.gt.exception.NotFoundException;
@@ -12,15 +25,6 @@ import com.goldentalk.gt.repository.PaymentRepository;
 import com.goldentalk.gt.repository.SectionRepository;
 import com.goldentalk.gt.repository.StudentRepository;
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -138,37 +142,44 @@ public class StudentServiceImpl implements StudentService {
         response.setFirstName(student.getFirstName());
         response.setMiddleName(student.getMiddleName());
         response.setLastName(student.getLastName());
+        response.setWhatsAppNum(student.getWhatsappNum());
+        
+        response.setAddress(student.getAddress());
 
         Set<String> sectionsIds = student.getSections().stream().map(s -> s.getId().toString()).collect(Collectors.toSet());
-//        response.setSectionIds(sectionsIds);
+        response.setSection(sectionsIds);
     
-    /*Set<String> courseIds = student.getCourses().stream().map(c -> c.getCourseId()).collect(Collectors.toSet());
-    response.setCourseIds(courseIds);*/
+    Set<String> courseIds = student.getCourses().stream().map(c -> c.getId().toString()).collect(Collectors.toSet());
+    response.setCourse(courseIds);
+    
+    List<PaymentDetailsDTO> paymentDetails = payments.stream().map(p -> PaymentDetailsDTO.builder()
+        .firstPaymentAmount(p.getFirstPaymentAmount())
+        .secondPaymentAmount(p.getSecondPaymentAmount()).build()).toList();
 
 //        response.setDob(student.getDob());
 
 //        List<PaymentDetailsDTO> paymentDetails = payments.stream().map(pay -> {
 //            PaymentDetailsDTO details = new PaymentDetailsDTO();
-
+//
 //      details.setCourseId(pay.getCourse().getCourseId());
 //            details.setPaymentId(pay.getPaymentId());
 //            details.setPaymentStatus(pay.getPaymentStatus());
 //      details.setPaidAmount(pay.getPaidAmount());
-      
-      /*List<InstallmentDTO> installments = pay.getInstallments().stream().map(inst -> {
-        InstallmentDTO installmentDto = new InstallmentDTO();
-        installmentDto.setId(inst.getId());
-        installmentDto.setPaymentAmount(inst.getPaymentAmount());
-        installmentDto.setPaymentDate(inst.getPaymentDate());
-        return installmentDto;
-      }).toList();
-      
-      details.getInstallments().addAll(installments);
-*/
+//      
+//      List<InstallmentDTO> installments = pay.getInstallments().stream().map(inst -> {
+//        InstallmentDTO installmentDto = new InstallmentDTO();
+//        installmentDto.setId(inst.getId());
+//        installmentDto.setPaymentAmount(inst.getPaymentAmount());
+//        installmentDto.setPaymentDate(inst.getPaymentDate());
+//        return installmentDto;
+//      }).toList();
+//      
+//      details.getInstallments().addAll(installments);
+
 //            return details;
 //        }).toList();
 
-//        response.getPayments().addAll(paymentDetails);
+        response.getPayments().addAll(paymentDetails);
 
         return response;
 

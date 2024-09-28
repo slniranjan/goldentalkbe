@@ -10,11 +10,12 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Data
 @Builder
-@NoArgsConstructor(force = true)
+@NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = false)
+@Getter @Setter
+//@Data
+//@EqualsAndHashCode(callSuper = false)
 public class Payment extends BaseEntity {
 
     @Id
@@ -35,7 +36,7 @@ public class Payment extends BaseEntity {
     @UpdateTimestamp
     private LocalDateTime secondPaymentDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY) // Prevents loading the Student when retrieving Payment
     @JoinColumn(name = "student_id")
     private Student student;
 
