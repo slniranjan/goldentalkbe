@@ -30,11 +30,15 @@ public class Payment extends BaseEntity {
 
     private double secondPaymentAmount;
 
-    @CreationTimestamp
+    /*@CreationTimestamp
     private LocalDateTime firstPaymentDate;
 
     @UpdateTimestamp
     private LocalDateTime secondPaymentDate;
+*/
+    private LocalDateTime firstPaymentDate;
+    private LocalDateTime secondPaymentDate;
+
 
     @ManyToOne(fetch = FetchType.LAZY) // Prevents loading the Student when retrieving Payment
     @JoinColumn(name = "student_id")
@@ -44,4 +48,14 @@ public class Payment extends BaseEntity {
     private Course course;
 
     private boolean deleted;
+
+    @PrePersist
+    protected void onCreate() {
+        firstPaymentDate = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        secondPaymentDate = LocalDateTime.now();
+    }
 }

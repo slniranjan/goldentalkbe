@@ -108,7 +108,7 @@ public class CourseServiceImpl implements CourseService {
         Course course = new Course();
         course.setName(request.getName());
         course.setCategory(request.getCategory());
-        course.setInstallment(request.isInstallment());
+        course.setInstallment(request.getIsInstallment());
         course.setFee(request.getFee());
         course.setSection(section);
 
@@ -131,7 +131,7 @@ public class CourseServiceImpl implements CourseService {
 
         course.setName(request.getName());
         course.setCategory(request.getCategory());
-        course.setInstallment(request.isInstallment());
+        course.setInstallment(request.getIsInstallment());
 //        course.setAllowedInstallment(request.getAllowedInstallment());
 //        course.setAmount(request.getAmount());
         course.setSection(section);

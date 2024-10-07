@@ -17,7 +17,7 @@ public class CreateCourseRequestDto {
   private String name;
 
   @NotNull
-  private boolean isInstallment;
+  private Boolean isInstallment;
 
   @Min(1000)
   private double fee;

@@ -1,22 +1,10 @@
 package com.goldentalk.gt.service;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import com.goldentalk.gt.dto.CreateAndUpdateStudentRequest;
 import com.goldentalk.gt.dto.CreateAndUpdateStudentResponse;
 import com.goldentalk.gt.dto.PaymentDetailsDTO;
 import com.goldentalk.gt.dto.StudentResponseDto;
-import com.goldentalk.gt.entity.Address;
-import com.goldentalk.gt.entity.Course;
-import com.goldentalk.gt.entity.Payment;
-import com.goldentalk.gt.entity.Section;
-import com.goldentalk.gt.entity.Student;
+import com.goldentalk.gt.entity.*;
 import com.goldentalk.gt.entity.enums.PaymentStatus;
 import com.goldentalk.gt.exception.LowPaymentException;
 import com.goldentalk.gt.exception.NotFoundException;
@@ -25,6 +13,16 @@ import com.goldentalk.gt.repository.PaymentRepository;
 import com.goldentalk.gt.repository.SectionRepository;
 import com.goldentalk.gt.repository.StudentRepository;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -72,7 +70,6 @@ public class StudentServiceImpl implements StudentService {
                 message = "Partial payment done. Student successfully registered!";
             }
         } else {
-            // TODO: second_payment_date also inserted. check the issue later
             if (course.getFee() <= request.getPayment().getFirstPaymentAmount()) {
                 paymentStatus = PaymentStatus.COMPLETED;
                 message = "Full payment done. Student successfully registered!";
@@ -124,18 +121,15 @@ public class StudentServiceImpl implements StudentService {
         Student student = studentRepository.findByStudentIdAndDeleted(studentId, false)
                 .orElseThrow(() -> new NotFoundException("Student not found for the id " + studentId));
 
-
-        Set<Payment> payments1 = student.getPayments();
-
         List<Payment> payments = Collections.emptyList();
         if (!student.getCourses().isEmpty()) {
             payments = student.getPayments().stream().collect(Collectors.toList());
         }
 
-        return transformStudentToStudnetResponDto(student, payments);
+        return transformStudentToStudentResponseDto(student, payments);
     }
 
-    private StudentResponseDto transformStudentToStudnetResponDto(Student student, List<Payment> payments) {
+    private StudentResponseDto transformStudentToStudentResponseDto(Student student, List<Payment> payments) {
         StudentResponseDto response = new StudentResponseDto();
 
         response.setStudentId(student.getStudentId());
@@ -143,18 +137,21 @@ public class StudentServiceImpl implements StudentService {
         response.setMiddleName(student.getMiddleName());
         response.setLastName(student.getLastName());
         response.setWhatsAppNum(student.getWhatsappNum());
-        
+
         response.setAddress(student.getAddress());
 
         Set<String> sectionsIds = student.getSections().stream().map(s -> s.getId().toString()).collect(Collectors.toSet());
         response.setSection(sectionsIds);
-    
-    Set<String> courseIds = student.getCourses().stream().map(c -> c.getId().toString()).collect(Collectors.toSet());
-    response.setCourse(courseIds);
-    
-    List<PaymentDetailsDTO> paymentDetails = payments.stream().map(p -> PaymentDetailsDTO.builder()
-        .firstPaymentAmount(p.getFirstPaymentAmount())
-        .secondPaymentAmount(p.getSecondPaymentAmount()).build()).toList();
+
+        Set<String> courseIds = student.getCourses().stream().map(c -> c.getId().toString()).collect(Collectors.toSet());
+        response.setCourse(courseIds);
+
+        List<PaymentDetailsDTO> paymentDetails = payments.stream().map(p -> PaymentDetailsDTO.builder()
+                .firstPaymentAmount(p.getFirstPaymentAmount())
+                .secondPaymentAmount(p.getSecondPaymentAmount())
+                .paymentStatus(p.getPaymentStatus())
+                .build()
+        ).toList();
 
 //        response.setDob(student.getDob());
 
@@ -210,5 +207,34 @@ public class StudentServiceImpl implements StudentService {
 
         student.setDeleted(true);*/
         return true;
+    }
+
+    @Transactional
+    @Override
+    public StudentResponseDto updateSecondPayment(String studentId, Integer courseId, Double payment) {
+
+        Student student = studentRepository.findStudentByStudentIdAndCourseId(studentId, courseId)
+                .orElseThrow(() -> new NotFoundException("Student " + studentId + " not registered for the course " + courseId));
+
+        Course course = courseRepository.findByIdAndIsDeleted(courseId, false)
+                .orElseThrow(() -> new NotFoundException("Course not found for the id " + courseId));
+
+        Payment existPayment = student.getPayments().stream()
+                .filter(p ->
+                        Objects.equals(p.getCourse().getId(), courseId)
+                ).findFirst().get();
+
+        if (course.getFee() < (payment + existPayment.getFirstPaymentAmount())) {
+            int status = paymentRepository.updateSecondPaymentAmount(existPayment.getPaymentId(), payment, PaymentStatus.COMPLETED);
+
+            if (status == 1) {
+                List<Payment> payments = studentRepository.findStudentByStudentIdAndCourseId(studentId, courseId).get().getPayments().stream().toList();
+                return transformStudentToStudentResponseDto(student, payments);
+            }
+        } else {
+            throw new LowPaymentException("Remaining full balance of " + (course.getFee() - existPayment.getFirstPaymentAmount()) + " is required for the last payment.");
+        }
+
+        return new StudentResponseDto();
     }
 }

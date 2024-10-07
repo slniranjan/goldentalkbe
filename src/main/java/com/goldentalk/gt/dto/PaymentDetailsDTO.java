@@ -12,9 +12,7 @@ import lombok.Setter;
 @Builder
 public class PaymentDetailsDTO {
 
-//  private PaymentStatus paymentStatus;
-  
-//  private String courseId;
+  private PaymentStatus paymentStatus;
   
   private double firstPaymentAmount;
 
