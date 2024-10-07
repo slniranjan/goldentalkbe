@@ -56,13 +56,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}sections/section/oet",
+							"raw": "{{base_url}}sections/section/ielts",
 							"host": [
 								"{{base_url}}sections"
 							],
 							"path": [
 								"section",
-								"oet"
+								"ielts"
 							]
 						}
 					},
@@ -89,7 +89,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"category\": \"simple\",\r\n  \"name\": \"1 month\",\r\n  \"fee\": 12120,\r\n  \"sectionId\": {{sectionId}},\r\n  \"isIntallment\": true\r\n}",
+							"raw": "{\r\n  \"category\": \"simple\",\r\n  \"name\": \"4 month\",\r\n  \"fee\": 10000,\r\n  \"sectionId\": {{sectionId}},\r\n  \"isInstallment\": true\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -156,12 +156,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}courses/1",
+							"raw": "{{base_url}}courses/4",
 							"host": [
 								"{{base_url}}courses"
 							],
 							"path": [
-								"1"
+								"4"
 							]
 						}
 					},
@@ -193,7 +193,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"firstName\": \"ABC\",\r\n  \"middleName\": \"DEF\",\r\n  \"lastName\": \"ERG\",\r\n  \"whatsAppNumber\": \"+94712917439\",\r\n  \"address\": {\r\n    \"street\": \"FSF\",\r\n    \"city\": \"fsfds\",\r\n    \"district\": \"trt\",\r\n    \"province\": \"ere\"\r\n  },\r\n  \"sectionId\": 3,\r\n  \"courseId\": 1,\r\n  \"payment\": {\r\n    \"firstPaymentAmount\": 12210,\r\n    \"secondPaymentAmount\": 0\r\n  }\r\n}",
+							"raw": "{\r\n  \"firstName\": \"ABC\",\r\n  \"middleName\": \"DEF\",\r\n  \"lastName\": \"ERG\",\r\n  \"whatsAppNumber\": \"+94712917437\",\r\n  \"address\": {\r\n    \"street\": \"FSF\",\r\n    \"city\": \"fsfds\",\r\n    \"district\": \"trt\",\r\n    \"province\": \"ere\"\r\n  },\r\n  \"sectionId\": 1,\r\n  \"courseId\": 4,\r\n  \"payment\": {\r\n    \"firstPaymentAmount\": 2000,\r\n    \"secondPaymentAmount\": 0\r\n  }\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -215,12 +215,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}students/OET00001",
+							"raw": "{{base_url}}students/IELTS00004",
 							"host": [
 								"{{base_url}}students"
 							],
 							"path": [
-								"OET00001"
+								"IELTS00004"
 							]
 						}
 					},
@@ -264,6 +264,40 @@
 							],
 							"path": [
 								"stu00002"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Make second payment",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"firstName\": \"ABC\",\r\n  \"middleName\": \"DEF\",\r\n  \"lastName\": \"ERG\",\r\n  \"dob\": \"1987-3-15\",\r\n  \"whatsAppNumber\": \"1234567890\",\r\n  \"address\": {\r\n    \"street\": \"FSF\",\r\n    \"city\": \"fsfds\",\r\n    \"district\": \"trt\",\r\n    \"province\": \"ere\"\r\n  },\r\n  \"sectionId\": [\r\n    2,3\r\n  ],\r\n  \"courseIds\": [\r\n    1\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}students/IELTS00004/courses/4?payment=10000",
+							"host": [
+								"{{base_url}}students"
+							],
+							"path": [
+								"IELTS00004",
+								"courses",
+								"4"
+							],
+							"query": [
+								{
+									"key": "payment",
+									"value": "10000"
+								}
 							]
 						}
 					},
@@ -312,7 +346,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"name\": \"fsfs\",\r\n  \"nic\": \"1234567896\",\r\n  \"phoneNumber\": \"1234567896\",\r\n  \"sectionId\": {{sectionId}},\r\n  \"courseIds\": [\r\n    1,2\r\n  ],\r\n  \"qualifications\": [\r\n    {\r\n      \"qualification\": \"adfs\",\r\n      \"institute\": \"aabc\"\r\n    }\r\n  ]\r\n}",
+							"raw": "{\r\n  \"name\": \"abc\",\r\n  \"nic\": \"1234567896\",\r\n  \"phoneNumber\": \"1234567896\",\r\n  \"sectionId\": {{sectionId}},\r\n  \"courseIds\": [\r\n    1\r\n  ],\r\n  \"qualifications\": [\r\n    {\r\n      \"qualification\": \"adfs\",\r\n      \"institute\": \"aabc\"\r\n    }\r\n  ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
