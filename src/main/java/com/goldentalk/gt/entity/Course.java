@@ -32,7 +32,7 @@ public class Course extends BaseEntity {
   private String name;
 
   @NotNull
-  private boolean isInstallment;
+  private Boolean installment;
 
   @Min(1000)
   private double fee;

@@ -26,6 +26,6 @@ public class CourseResponseDto {
   
   private double courseFee;
   
-  private boolean isInstallment;
+  private Boolean installment;
   
 }

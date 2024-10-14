@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class CreateCourseRequestDto {
+public class UpdateCourseRequestDto {
 
   @NotBlank
   @NotNull
@@ -21,8 +21,5 @@ public class CreateCourseRequestDto {
 
   @Min(1000)
   private double fee;
-
-  @NotNull
-  private int sectionId;
 
 }

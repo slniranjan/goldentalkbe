@@ -1,6 +1,8 @@
 package com.goldentalk.gt.dto;
 
 import com.goldentalk.gt.entity.Course;
+import com.goldentalk.gt.entity.Qualification;
+import com.goldentalk.gt.entity.Section;
 import lombok.Builder;
 import lombok.Data;
 
@@ -15,8 +17,10 @@ public class TeacherResponseDto {
   
   private Integer id;
   
-  private String section;
+  private String sectionName;
   
   private List<String> courseNames;
+
+  private Set<Qualification> qualifications;
 
 }

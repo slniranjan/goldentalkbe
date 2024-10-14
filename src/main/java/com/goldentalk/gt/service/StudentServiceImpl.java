@@ -61,7 +61,7 @@ public class StudentServiceImpl implements StudentService {
         String message = "";
         Student stu = new Student();
         PaymentStatus paymentStatus = null;
-        if (course.isInstallment()) {
+        if (course.getInstallment()) {
             if (course.getFee() <= request.getPayment().getFirstPaymentAmount()) {
                 paymentStatus = PaymentStatus.COMPLETED;
                 message = "Full payment done. Student successfully registered!";

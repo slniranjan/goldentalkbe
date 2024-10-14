@@ -15,6 +15,7 @@ import com.goldentalk.gt.repository.CourseRepository;
 import com.goldentalk.gt.repository.SectionRepository;
 import com.goldentalk.gt.repository.TeacherRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
@@ -26,12 +27,10 @@ public class TeacherServiceImpl implements TeacherService {
     private TeacherMapper teacherMapper;
 
     @Override
+    @Transactional
     public Integer createTeacher(TeacherRequestDto request) {
 
-        Teacher teacher = new Teacher();
-        teacher.setName(request.getName());
-        teacher.setNic(request.getNic());
-        teacher.setPhoneNumber(request.getPhoneNumber());
+        Teacher teacher = teacherMapper.teacherRequestDtoToTeacher(request);
 
         Section section = sectionRepository
                 .findById(request.getSectionId())
@@ -39,36 +38,28 @@ public class TeacherServiceImpl implements TeacherService {
 
         teacher.setSection(section);
 
-        Set<Course> courses = null;
+        Set<Course> courses = new HashSet<>();
 
         if (!request.getCourseIds().isEmpty()) {
             courses = courseRepository.findByIdInAndIsDeleted(request.getCourseIds(), false);
             if (courses.isEmpty())
                 throw new NotFoundException("Course not found for the given course ids " + request.getCourseIds());
             teacher.setCourses(courses);
+        } else {
+            teacher.setCourses(null);
         }
 
-        teacher.setCourses(null);
-
-        request.getQualifications().forEach(q -> {
-            Qualification qa = new Qualification();
-            qa.setQualification(q.getQualification());
-            qa.setInstitute(q.getInstitute());
-            qa.setTeacher(teacher);
-            qa.setDeleted(false);
-            teacher.getQualifications().add(qa);
-            qa.setTeacher(teacher);
-        });
-
-        teacher.setDeleted(false);
+        teacher.getQualifications().forEach(qualification -> qualification.setTeacher(teacher));
 
         Teacher savedTeacher = teacherRepository.save(teacher);
 
         if (!request.getCourseIds().isEmpty()) {
-            courses.forEach(c -> {
-                c.setTeacher(savedTeacher);
-                courseRepository.save(c);
-            });
+            if (!courses.isEmpty()) {
+                courses.forEach(c -> {
+                    c.setTeacher(savedTeacher);
+                    courseRepository.save(c);
+                });
+            }
         }
 
         return savedTeacher.getId();
@@ -80,20 +71,21 @@ public class TeacherServiceImpl implements TeacherService {
         Teacher teacher = teacherRepository.findById(teacherId)
                 .orElseThrow(() -> new NotFoundException("Teacher not found for the given id " + teacherId));
 
-        return teacherMapper.toDto(teacher);
+        return teacherMapper.teacherToTeacherResponseDto(teacher);
     }
 
     @Override
     public List<TeacherResponseDto> retrieveTeachers() {
 
-        Iterable<Teacher> teachers = teacherRepository.findAll();
-        List<TeacherResponseDto> dto = new ArrayList<>();
-
-        teachers.forEach(teacher -> {
-            dto.add(teacherMapper.toDto(teacher));
-        });
-
-        return dto;
+//        Iterable<Teacher> teachers = teacherRepository.findAll();
+//        List<TeacherResponseDto> dto = new ArrayList<>();
+//
+//        teachers.forEach(teacher -> {
+//            dto.add(teacherMapper.toDto(teacher));
+//        });
+//
+//        return dto;
+        return null;
     }
 
     @Override

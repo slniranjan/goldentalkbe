@@ -31,8 +31,8 @@ public class TeacherRequestDto {
   private Integer sectionId;
 
   @NotNull
-  private List<Integer> courseIds;
+  private Set<Integer> courseIds;
   
-  private List<TeacherQualificationDTO> qualifications;
+  private Set<TeacherQualificationDTO> qualifications;
   
 }

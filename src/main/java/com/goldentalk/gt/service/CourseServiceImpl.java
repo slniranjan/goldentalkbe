@@ -1,30 +1,33 @@
 package com.goldentalk.gt.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import com.goldentalk.gt.exception.*;
-import org.springframework.stereotype.Service;
 import com.goldentalk.gt.dto.CourseResponseDto;
 import com.goldentalk.gt.dto.CreateCourseRequestDto;
 import com.goldentalk.gt.dto.CreateCourseResponseDto;
+import com.goldentalk.gt.dto.UpdateCourseRequestDto;
 import com.goldentalk.gt.entity.Course;
 import com.goldentalk.gt.entity.Section;
 import com.goldentalk.gt.entity.Teacher;
+import com.goldentalk.gt.exception.AlreadyExistsException;
+import com.goldentalk.gt.exception.NotFoundException;
+import com.goldentalk.gt.mapper.CourseMapper;
 import com.goldentalk.gt.repository.CourseRepository;
 import com.goldentalk.gt.repository.SectionRepository;
 import com.goldentalk.gt.repository.TeacherRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
 public class CourseServiceImpl implements CourseService {
 
     private CourseRepository courseRepository;
-
     private TeacherRepository teacherRepository;
-
     private SectionRepository sectionRepository;
+    private CourseMapper courseMapper;
 
     @Override
     public CourseResponseDto retrieveCourse(Integer id) {
@@ -32,7 +35,8 @@ public class CourseServiceImpl implements CourseService {
         Course course = courseRepository.findByIdAndIsDeleted(id, false)
                 .orElseThrow(() -> new NotFoundException("Course Not found for the id " + id));
 
-        return transformCourseToResponse(course);
+        return courseMapper.courseToCourseResponseDto(course);
+
     }
 
     @Override
@@ -47,44 +51,7 @@ public class CourseServiceImpl implements CourseService {
         course.setTeacher(teacher);
         Course persistedCourse = courseRepository.save(course);
 
-        return transformCourseToResponse(persistedCourse);
-    }
-
-    private CourseResponseDto transformCourseToResponse(Course course) {
-
-        Integer teacherId = 0;
-        String name = "";
-        if (course.getTeacher() != null) {
-            teacherId = course.getTeacher().getId();
-            name = course.getTeacher().getName();
-        }
-
-        List<String> studentIds = course.getStudents().stream().map(st -> st.getStudentId()).collect(Collectors.toList());
-
-//        response.setStudentIds(studentIds);
-//        response.setStudentCount(studentIds.size());
-
-        return CourseResponseDto.builder()
-                .id(course.getId())
-                .category(course.getCategory())
-                .courseName(course.getName())
-                .courseFee(course.getFee())
-                .isInstallment(course.isInstallment())
-                .teacherId(teacherId)
-                .teacherName(name)
-                .studentIds(studentIds)
-                .studentCount(studentIds.size())
-                .build();
-
-
-//        CourseResponseDto response = new CourseResponseDto();
-////        response.setCourseId(course.getCourseId());
-//        response.setCourseName(course.getName());
-//        response.setCourseFee(course.getFee());
-//        response.setInstallment(course.isInstallment());
-//        response.setNumOfInstallments(course.getAllowedInstallment());
-
-
+        return courseMapper.courseToCourseResponseDto(persistedCourse);
     }
 
     @Override
@@ -96,58 +63,32 @@ public class CourseServiceImpl implements CourseService {
         Section section = sectionRepository.findById(request.getSectionId())
                 .orElseThrow(() -> new NotFoundException("Section not found for the section id " + request.getSectionId()));
 
-        Course persistedCourse = saveCourse(request, section);
-
-        CreateCourseResponseDto response = new CreateCourseResponseDto();
-        response.setId(persistedCourse.getId());
-
-        return response;
-    }
-
-    private Course saveCourse(CreateCourseRequestDto request, Section section) {
-        Course course = new Course();
-        course.setName(request.getName());
-        course.setCategory(request.getCategory());
-        course.setInstallment(request.getIsInstallment());
-        course.setFee(request.getFee());
+        Course course = courseMapper.createCourseRequestDtoToCourse(request);
         course.setSection(section);
 
-        return courseRepository.save(course);
+        Course persistedCourse = courseRepository.save(course);
+
+        return courseMapper.courseToCreateCourseResponseDto(persistedCourse);
     }
 
     @Override
-    public CourseResponseDto updateCourse(Integer id, CreateCourseRequestDto request) {
-        Course course = courseRepository.findByIdAndIsDeleted(id, false)
-                .orElseThrow(() -> new NotFoundException("Course not found for the id " + id));
+    @Transactional
+    public CourseResponseDto updateCourse(Integer id, UpdateCourseRequestDto request) {
+        int status = courseRepository.updateCourse(id, request.getCategory(), request.getName(), request.getInstallment(), request.getFee());
 
-        Section section = sectionRepository.findById(request.getSectionId())
-                .orElseThrow(() -> new NotFoundException("Section Not found for the id " + request.getSectionId()));
+        if (status == 0)
+            throw new NotFoundException("Course not found for the id " + id);
 
-        return transformCourseToResponse(updateCourse(course, request, section));
-    }
+        Optional<Course> course = courseRepository.findByIdAndIsDeleted(id, false);
 
+        return courseMapper.courseToCourseResponseDto(course.get());
 
-    public Course updateCourse(Course course, CreateCourseRequestDto request, Section section) {
-
-        course.setName(request.getName());
-        course.setCategory(request.getCategory());
-        course.setInstallment(request.getIsInstallment());
-//        course.setAllowedInstallment(request.getAllowedInstallment());
-//        course.setAmount(request.getAmount());
-        course.setSection(section);
-
-        return courseRepository.save(course);
     }
 
     @Override
     public List<CourseResponseDto> retriveAllCourses() {
+        List<Course> courseList = courseRepository.findAll();
 
-        List<Course> course = (List<Course>) courseRepository.findAll();
-
-        return course.stream().map(c -> {
-            CourseResponseDto cr = transformCourseToResponse(c);
-            return cr;
-        }).collect(Collectors.toList());
-
+        return courseMapper.courseToCourseResponseDto(courseList);
     }
 }

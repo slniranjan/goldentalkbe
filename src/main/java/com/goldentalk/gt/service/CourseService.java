@@ -5,6 +5,7 @@ import java.util.List;
 import com.goldentalk.gt.dto.CourseResponseDto;
 import com.goldentalk.gt.dto.CreateCourseRequestDto;
 import com.goldentalk.gt.dto.CreateCourseResponseDto;
+import com.goldentalk.gt.dto.UpdateCourseRequestDto;
 
 public interface CourseService {
 
@@ -16,5 +17,5 @@ public interface CourseService {
   
   CreateCourseResponseDto createCourse(CreateCourseRequestDto request);
   
-  CourseResponseDto updateCourse(Integer id, CreateCourseRequestDto request);
+  CourseResponseDto updateCourse(Integer id, UpdateCourseRequestDto request);
 }

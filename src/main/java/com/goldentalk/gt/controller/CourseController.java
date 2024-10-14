@@ -125,7 +125,7 @@ public class CourseController {
     )
     @PutMapping("/{courseId}")
     @ResponseStatus(value = HttpStatus.CREATED)
-    public CourseResponseDto updateCourse(@PathVariable("courseId") Integer courseId, @Validated @RequestBody CreateCourseRequestDto request) {
+    public CourseResponseDto updateCourse(@PathVariable("courseId") Integer courseId, @Validated @RequestBody UpdateCourseRequestDto request) {
         return courseService.updateCourse(courseId, request);
     }
 
