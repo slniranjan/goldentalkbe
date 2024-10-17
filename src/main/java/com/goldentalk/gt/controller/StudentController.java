@@ -45,7 +45,7 @@ public class StudentController {
     }
 
     @GetMapping("/{studentId}")
-    public StudentResponseDto retrieveStrudent(@PathVariable String studentId) {
+    public StudentResponseDto retrieveStudent(@PathVariable String studentId) {
         return studentService.retrieveStudents(studentId);
     }
 
@@ -62,7 +62,8 @@ public class StudentController {
     }
 
     @DeleteMapping("/{student-id}")
-    public boolean deleteStudent(@PathVariable("student-id") String studentId) {
-        return studentService.deleteStudent(studentId);
+    public ResponseEntity<StudentResponseDto> deleteStudent(@PathVariable("student-id") String studentId) {
+
+        return ResponseEntity.ok(studentService.deleteStudent(studentId));
     }
 }

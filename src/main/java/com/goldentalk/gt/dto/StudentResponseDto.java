@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import com.goldentalk.gt.entity.Address;
+import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 @Data
+//@Builder
 public class StudentResponseDto {
 
   private String studentId;

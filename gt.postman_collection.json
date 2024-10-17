@@ -7,7 +7,7 @@
 	},
 	"item": [
 		{
-			"name": "course",
+			"name": "section",
 			"item": [
 				{
 					"name": "give section details for given id",
@@ -15,12 +15,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}sections/3",
+							"raw": "{{base_url}}sections/1",
 							"host": [
 								"{{base_url}}sections"
 							],
 							"path": [
-								"3"
+								"1"
 							]
 						}
 					},
@@ -81,15 +81,20 @@
 						}
 					},
 					"response": []
-				},
+				}
+			]
+		},
+		{
+			"name": "course",
+			"item": [
 				{
-					"name": "2. Create a new course(category - simple, seminar, package / installment - true, false)",
+					"name": "Create a new course(category - simple, seminar, package / installment - true, false)",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"category\": \"simple\",\r\n  \"name\": \"4 month\",\r\n  \"fee\": 10000,\r\n  \"sectionId\": {{sectionId}},\r\n  \"isInstallment\": true\r\n}",
+							"raw": "{\r\n  \"category\": \"simple\",\r\n  \"name\": \"5 month\",\r\n  \"fee\": 10000,\r\n  \"sectionId\": {{sectionId}},\r\n  \"installment\": true\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -111,14 +116,14 @@
 						"method": "PATCH",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}courses/2/teachers/2",
+							"raw": "{{base_url}}courses/2/teachers/1",
 							"host": [
 								"{{base_url}}courses"
 							],
 							"path": [
 								"2",
 								"teachers",
-								"2"
+								"1"
 							]
 						}
 					},
@@ -131,7 +136,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"category\": \"simple\",\r\n  \"name\": \"5 month\",\r\n  \"fee\": 1,\r\n  \"sectionId\": {{sectionId}},\r\n  \"isIntallment\": true\r\n}",
+							"raw": "{\r\n  \"category\": \"simple test\",\r\n  \"name\": \"5 month test\",\r\n  \"fee\": 12000,\r\n  \"installment\": false\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -156,12 +161,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}courses/4",
+							"raw": "{{base_url}}courses/1",
 							"host": [
 								"{{base_url}}courses"
 							],
 							"path": [
-								"4"
+								"1"
 							]
 						}
 					},
@@ -193,7 +198,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"firstName\": \"ABC\",\r\n  \"middleName\": \"DEF\",\r\n  \"lastName\": \"ERG\",\r\n  \"whatsAppNumber\": \"+94712917437\",\r\n  \"address\": {\r\n    \"street\": \"FSF\",\r\n    \"city\": \"fsfds\",\r\n    \"district\": \"trt\",\r\n    \"province\": \"ere\"\r\n  },\r\n  \"sectionId\": 1,\r\n  \"courseId\": 4,\r\n  \"payment\": {\r\n    \"firstPaymentAmount\": 2000,\r\n    \"secondPaymentAmount\": 0\r\n  }\r\n}",
+							"raw": "{\r\n  \"firstName\": \"ABC\",\r\n  \"middleName\": \"DEF\",\r\n  \"lastName\": \"ERG\",\r\n  \"whatsAppNumber\": \"+94712917427\",\r\n  \"address\": {\r\n    \"street\": \"FSF\",\r\n    \"city\": \"fsfds\",\r\n    \"district\": \"trt\",\r\n    \"province\": \"ere\"\r\n  },\r\n  \"sectionId\": 1,\r\n  \"courseId\": 1,\r\n  \"payment\": {\r\n    \"firstPaymentAmount\": 2000,\r\n    \"secondPaymentAmount\": 0\r\n  }\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -232,12 +237,12 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}students/stu00002",
+							"raw": "{{base_url}}students/IELTS00001",
 							"host": [
 								"{{base_url}}students"
 							],
 							"path": [
-								"stu00002"
+								"IELTS00001"
 							]
 						}
 					},
@@ -328,12 +333,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}teachers/2",
+							"raw": "{{base_url}}teachers/1",
 							"host": [
 								"{{base_url}}teachers"
 							],
 							"path": [
-								"2"
+								"1"
 							]
 						}
 					},
@@ -346,7 +351,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"name\": \"abc\",\r\n  \"nic\": \"1234567896\",\r\n  \"phoneNumber\": \"1234567896\",\r\n  \"sectionId\": {{sectionId}},\r\n  \"courseIds\": [\r\n    1\r\n  ],\r\n  \"qualifications\": [\r\n    {\r\n      \"qualification\": \"adfs\",\r\n      \"institute\": \"aabc\"\r\n    }\r\n  ]\r\n}",
+							"raw": "{\r\n  \"name\": \"abc\",\r\n  \"nic\": \"1234567890\",\r\n  \"phoneNumber\": \"1234567890\",\r\n  \"sectionId\": {{sectionId}},\r\n  \"courseIds\": [\r\n    1\r\n  ],\r\n  \"qualifications\": [\r\n    {\r\n      \"qualification\": \"qul1\",\r\n      \"institute\": \"ins1\"\r\n    }\r\n  ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -369,7 +374,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"name\": \"fsfs\",\r\n  \"nic\": \"1234657896\",\r\n  \"phoneNumber\": \"7234567896\",\r\n  \"sectionId\": {{sectionId}},\r\n  \"courseIds\": [\r\n    1,2\r\n  ],\r\n  \"qualifications\": [\r\n    {\r\n      \"qualification\": \"adfs\",\r\n      \"institute\": \"aabc\"\r\n    }\r\n  ]\r\n}",
+							"raw": "{\r\n  \"name\": \"abc\",\r\n  \"nic\": \"1234567890\",\r\n  \"phoneNumber\": \"1234567890\",\r\n  \"sectionId\": 2,\r\n  \"courseIds\": [\r\n    22\r\n  ],\r\n  \"qualifications\": [\r\n    {\r\n      \"qualification\": \"qul3\",\r\n      \"institute\": \"ins3\"\r\n    }\r\n  ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"

@@ -12,8 +12,8 @@ public interface StudentService {
   StudentResponseDto retrieveStudents(String studentId);
   
   CreateAndUpdateStudentResponse updateStudent(String studentId, CreateAndUpdateStudentRequest request);
-  
-  boolean deleteStudent(String studentId);
+
+  StudentResponseDto deleteStudent(String studentId);
 
   StudentResponseDto updateSecondPayment(String studentId, Integer courseid, Double payment);
 }

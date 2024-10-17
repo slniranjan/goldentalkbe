@@ -198,15 +198,24 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public boolean deleteStudent(String studentId) {
-        /*Student student = studentRepository.findByStudentIdAndDeleted(studentId, false);
+    public StudentResponseDto deleteStudent(String studentId) {
+        Student student = studentRepository.findByStudentIdAndDeleted(studentId, false)
+                .orElseThrow(() -> new NotFoundException("Student not found for the id " + studentId));
 
-        if (student == null) {
-            throw new NotFoundException("Student not found for the id " + studentId);
-        }
+        student.setDeleted(true);
+        Student savedStudent = studentRepository.save(student);
 
-        student.setDeleted(true);*/
-        return true;
+        StudentResponseDto studentResponseDto = new StudentResponseDto();
+
+        studentResponseDto.setStudentId(savedStudent.getStudentId());
+        studentResponseDto.setFirstName(savedStudent.getFirstName());
+        studentResponseDto.setMiddleName(savedStudent.getMiddleName());
+        studentResponseDto.setLastName(savedStudent.getLastName());
+
+        studentResponseDto.setCourse(savedStudent.getCourses().stream().map(Course::getName).collect(Collectors.toSet()));
+        studentResponseDto.setAddress(savedStudent.getAddress());
+
+        return studentResponseDto;
     }
 
     @Transactional
