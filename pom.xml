@@ -79,6 +79,7 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
+			<optional>true</optional>
 <!--			<scope>runtime</scope> &lt;!&ndash; Only active in development, not in production &ndash;&gt;-->
 <!--			<optional>true</optional> &lt;!&ndash; Optional ensures that it's not included in fat jars &ndash;&gt;-->
 		</dependency>

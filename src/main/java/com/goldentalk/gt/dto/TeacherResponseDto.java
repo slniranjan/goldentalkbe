@@ -13,14 +13,18 @@ import java.util.Set;
 @Builder
 public class TeacherResponseDto {
 
-  private String name;
-  
   private Integer id;
-  
-  private String sectionName;
-  
-  private List<String> courseNames;
 
-  private Set<Qualification> qualifications;
+  private String name;
+
+  private String nic;
+
+  private String phoneNumber;
+
+  private String sectionName;
+
+  private Set<String> courseNames;
+
+  private Set<String> qualifications;
 
 }

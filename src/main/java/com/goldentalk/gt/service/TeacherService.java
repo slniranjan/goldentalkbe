@@ -2,9 +2,11 @@ package com.goldentalk.gt.service;
 
 import com.goldentalk.gt.dto.TeacherRequestDto;
 import com.goldentalk.gt.dto.TeacherResponseDto;
+import com.goldentalk.gt.entity.Teacher;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface TeacherService {
 
@@ -15,6 +17,6 @@ public interface TeacherService {
 
     List<TeacherResponseDto> retrieveTeachers();
 
-    void updateTeacher(Integer id, TeacherRequestDto request);
+    TeacherResponseDto updateTeacher(Integer id, TeacherRequestDto request);
 
 }

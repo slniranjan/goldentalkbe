@@ -8,5 +8,6 @@ import java.util.Optional;
 public interface TeacherRepository extends JpaRepository<Teacher, Integer> {
 
     Optional<Teacher> findByIdAndIsDeleted(Integer teacherId, boolean isDeleted);
+    Optional<Teacher> findByNicAndIsDeleted(String nic, boolean isDeleted);
 
 }

@@ -26,28 +26,21 @@ public interface TeacherMapper {
 
     @Mapping(source = "section.sectionName", target = "sectionName")
     @Mapping(source = "courses", target = "courseNames", qualifiedByName = "mapCoursesName")
-    @Mapping(target = "qualifications.teacher", ignore = true)
+    @Mapping(source = "qualifications", target = "qualifications", qualifiedByName = "mapQualificationsName")
     TeacherResponseDto teacherToTeacherResponseDto(Teacher teacher);
 
     // Custom method to map student IDs to List<String>
     @Named("mapCoursesName")
-    default List<String> mapCoursesName(Set<Course> courses) {
+    default Set<String> mapCoursesName(Set<Course> courses) {
         return courses.stream()
                 .map(course -> String.valueOf(course.getName()))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
-/*    // Custom method to convert Section object to String
-    @Named("objectToString")
-    default String objectToString(Section section) {
-        return section.getSectionName();
+    @Named("mapQualificationsName")
+    default Set<String> mapQualificationsName(Set<Qualification> qualifications) {
+        return qualifications.stream()
+                .map(qualification -> String.valueOf(qualification.getQualification()))
+                .collect(Collectors.toSet());
     }
-
-    @Named("setToList")
-    default List<String> extracted(Set<Course> set) {
-        ArrayList<String> names = new ArrayList<>();
-        set.forEach(c -> names.add(c.getName()));
-
-        return names;
-    }*/
 }

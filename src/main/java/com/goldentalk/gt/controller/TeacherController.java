@@ -92,7 +92,7 @@ public class TeacherController {
     }
     )
     @GetMapping("/{teacherId}")
-    public ResponseEntity<TeacherResponseDto> retrieveTeacher(@PathVariable Integer teacherId) {
+    public ResponseEntity<TeacherResponseDto> retrieveTeacherById(@PathVariable Integer teacherId) {
 
         return new ResponseEntity<>(teacherService.retrieveTeacher(teacherId), HttpStatus.OK);
     }
@@ -116,7 +116,7 @@ public class TeacherController {
     }
     )
     @GetMapping()
-    public ResponseEntity<List<TeacherResponseDto>> retrieveTeacher() {
+    public ResponseEntity<List<TeacherResponseDto>> retrieveTeachers() {
 
         return new ResponseEntity<>(teacherService.retrieveTeachers(), HttpStatus.OK);
     }
@@ -140,8 +140,11 @@ public class TeacherController {
     }
     )
     @PutMapping("/{teacherId}")
-    public ResponseEntity<String> updateCourseForTheTeacher(@PathVariable Integer teacherId,
+    public ResponseEntity<TeacherResponseDto> updateCourseForTheTeacher(@PathVariable Integer teacherId,
                                                             @Validated @RequestBody TeacherRequestDto request) {
+
+        return ResponseEntity.ok(teacherService.updateTeacher(teacherId, request));
+
 
         /*teacherService.updateTeacher(teacherId, request);
 
@@ -154,7 +157,7 @@ public class TeacherController {
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(location);*/
 
-        return new ResponseEntity<>("", null, HttpStatus.CONFLICT);
+//        return new ResponseEntity<>("", null, HttpStatus.CONFLICT);
 
 
     }
