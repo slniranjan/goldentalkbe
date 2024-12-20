@@ -4,8 +4,6 @@ import com.goldentalk.gt.entity.enums.PaymentStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -14,8 +12,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter @Setter
-//@Data
-//@EqualsAndHashCode(callSuper = false)
 public class Payment extends BaseEntity {
 
     @Id
@@ -30,14 +26,8 @@ public class Payment extends BaseEntity {
 
     private double secondPaymentAmount;
 
-    /*@CreationTimestamp
     private LocalDateTime firstPaymentDate;
-
-    @UpdateTimestamp
-    private LocalDateTime secondPaymentDate;
-*/
-    private LocalDateTime firstPaymentDate;
-    private LocalDateTime secondPaymentDate;
+    private LocalDateTime nextPaymentDate;
 
 
     @ManyToOne(fetch = FetchType.LAZY) // Prevents loading the Student when retrieving Payment
@@ -52,10 +42,6 @@ public class Payment extends BaseEntity {
     @PrePersist
     protected void onCreate() {
         firstPaymentDate = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        secondPaymentDate = LocalDateTime.now();
+        nextPaymentDate = LocalDateTime.now().plusMonths(1);
     }
 }

@@ -231,19 +231,18 @@ public class StudentServiceImpl implements StudentService {
         Payment existPayment = student.getPayments().stream()
                 .filter(p ->
                         Objects.equals(p.getCourse().getId(), courseId)
-                ).findFirst().get();
+                ).findFirst().orElseThrow(() -> new NotFoundException("Valid payment details not found for the student " + studentId));
 
-        if (course.getFee() < (payment + existPayment.getFirstPaymentAmount())) {
-            int status = paymentRepository.updateSecondPaymentAmount(existPayment.getPaymentId(), payment, PaymentStatus.COMPLETED);
+        if (course.getFee() <= (payment + existPayment.getFirstPaymentAmount())) {
+            Payment processingPayment = paymentRepository.findById(existPayment.getPaymentId()).orElseThrow();
+            processingPayment.setSecondPaymentAmount(payment);
+            processingPayment.setPaymentStatus(PaymentStatus.COMPLETED);
 
-            if (status == 1) {
-                List<Payment> payments = studentRepository.findStudentByStudentIdAndCourseId(studentId, courseId).get().getPayments().stream().toList();
-                return transformStudentToStudentResponseDto(student, payments);
-            }
+            paymentRepository.save(processingPayment);
+            List<Payment> payments = studentRepository.findStudentByStudentIdAndCourseId(studentId, courseId).orElseThrow().getPayments().stream().toList();
+            return transformStudentToStudentResponseDto(student, payments);
         } else {
             throw new LowPaymentException("Remaining full balance of " + (course.getFee() - existPayment.getFirstPaymentAmount()) + " is required for the last payment.");
         }
-
-        return new StudentResponseDto();
     }
 }
