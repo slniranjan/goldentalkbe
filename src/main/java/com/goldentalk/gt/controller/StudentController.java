@@ -1,5 +1,7 @@
 package com.goldentalk.gt.controller;
 
+import com.goldentalk.gt.dto.NotificationDto;
+import com.goldentalk.gt.entity.Payment;
 import com.goldentalk.gt.entity.Student;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +18,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/students")
@@ -65,5 +68,12 @@ public class StudentController {
     public ResponseEntity<StudentResponseDto> deleteStudent(@PathVariable("student-id") String studentId) {
 
         return ResponseEntity.ok(studentService.deleteStudent(studentId));
+    }
+
+    @GetMapping("/notifications")
+    @ResponseStatus(value = HttpStatus.OK)
+    public List<NotificationDto> getUpcomingPayments() {
+
+        return studentService.getUpcomingPayments();
     }
 }

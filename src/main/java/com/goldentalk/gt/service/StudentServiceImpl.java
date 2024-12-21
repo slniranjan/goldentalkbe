@@ -1,9 +1,6 @@
 package com.goldentalk.gt.service;
 
-import com.goldentalk.gt.dto.CreateAndUpdateStudentRequest;
-import com.goldentalk.gt.dto.CreateAndUpdateStudentResponse;
-import com.goldentalk.gt.dto.PaymentDetailsDTO;
-import com.goldentalk.gt.dto.StudentResponseDto;
+import com.goldentalk.gt.dto.*;
 import com.goldentalk.gt.entity.*;
 import com.goldentalk.gt.entity.enums.PaymentStatus;
 import com.goldentalk.gt.exception.LowPaymentException;
@@ -18,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -130,21 +128,6 @@ public class StudentServiceImpl implements StudentService {
     }
 
     private StudentResponseDto transformStudentToStudentResponseDto(Student student, List<Payment> payments) {
-        StudentResponseDto response = new StudentResponseDto();
-
-        response.setStudentId(student.getStudentId());
-        response.setFirstName(student.getFirstName());
-        response.setMiddleName(student.getMiddleName());
-        response.setLastName(student.getLastName());
-        response.setWhatsAppNum(student.getWhatsappNum());
-
-        response.setAddress(student.getAddress());
-
-        Set<String> sectionsIds = student.getSections().stream().map(s -> s.getId().toString()).collect(Collectors.toSet());
-        response.setSection(sectionsIds);
-
-        Set<String> courseIds = student.getCourses().stream().map(c -> c.getId().toString()).collect(Collectors.toSet());
-        response.setCourse(courseIds);
 
         List<PaymentDetailsDTO> paymentDetails = payments.stream().map(p -> PaymentDetailsDTO.builder()
                 .firstPaymentAmount(p.getFirstPaymentAmount())
@@ -152,6 +135,36 @@ public class StudentServiceImpl implements StudentService {
                 .paymentStatus(p.getPaymentStatus())
                 .build()
         ).toList();
+
+        return StudentResponseDto.builder()
+                .studentId(student.getStudentId())
+                .firstName(student.getFirstName())
+                .middleName(student.getMiddleName())
+                .lastName(student.getLastName())
+                .whatsAppNum(student.getWhatsappNum())
+                .address(student.getAddress())
+                .section(student.getSections().stream().map(s -> s.getId().toString()).collect(Collectors.toSet()))
+                .course(student.getCourses().stream().map(c -> c.getId().toString()).collect(Collectors.toSet()))
+                .payments(paymentDetails)
+                .build();
+
+
+//        StudentResponseDto response = new StudentResponseDto();
+//
+//        response.setStudentId(student.getStudentId());
+//        response.setFirstName(student.getFirstName());
+//        response.setMiddleName(student.getMiddleName());
+//        response.setLastName(student.getLastName());
+//        response.setWhatsAppNum(student.getWhatsappNum());
+//
+//        response.setAddress(student.getAddress());
+
+//        Set<String> sectionsIds = student.getSections().stream().map(s -> s.getId().toString()).collect(Collectors.toSet());
+//        response.setSection(sectionsIds);
+//
+//        Set<String> courseIds = student.getCourses().stream().map(c -> c.getId().toString()).collect(Collectors.toSet());
+//        response.setCourse(courseIds);
+
 
 //        response.setDob(student.getDob());
 
@@ -176,9 +189,9 @@ public class StudentServiceImpl implements StudentService {
 //            return details;
 //        }).toList();
 
-        response.getPayments().addAll(paymentDetails);
+//        response.getPayments().addAll(paymentDetails);
 
-        return response;
+//        return response;
 
     }
 
@@ -205,17 +218,26 @@ public class StudentServiceImpl implements StudentService {
         student.setDeleted(true);
         Student savedStudent = studentRepository.save(student);
 
-        StudentResponseDto studentResponseDto = new StudentResponseDto();
+        return StudentResponseDto.builder()
+                .studentId(savedStudent.getStudentId())
+                .firstName(savedStudent.getFirstName())
+                .middleName(savedStudent.getMiddleName())
+                .lastName(savedStudent.getLastName())
+                .course(savedStudent.getCourses().stream().map(Course::getName).collect(Collectors.toSet()))
+                .address(savedStudent.getAddress())
+                .build();
 
-        studentResponseDto.setStudentId(savedStudent.getStudentId());
-        studentResponseDto.setFirstName(savedStudent.getFirstName());
-        studentResponseDto.setMiddleName(savedStudent.getMiddleName());
-        studentResponseDto.setLastName(savedStudent.getLastName());
+//        StudentResponseDto studentResponseDto = new StudentResponseDto();
 
-        studentResponseDto.setCourse(savedStudent.getCourses().stream().map(Course::getName).collect(Collectors.toSet()));
-        studentResponseDto.setAddress(savedStudent.getAddress());
-
-        return studentResponseDto;
+//        studentResponseDto.setStudentId(savedStudent.getStudentId());
+//        studentResponseDto.setFirstName(savedStudent.getFirstName());
+//        studentResponseDto.setMiddleName(savedStudent.getMiddleName());
+//        studentResponseDto.setLastName(savedStudent.getLastName());
+//
+//        studentResponseDto.setCourse(savedStudent.getCourses().stream().map(Course::getName).collect(Collectors.toSet()));
+//        studentResponseDto.setAddress(savedStudent.getAddress());
+//
+//        return studentResponseDto;
     }
 
     @Transactional
@@ -244,5 +266,30 @@ public class StudentServiceImpl implements StudentService {
         } else {
             throw new LowPaymentException("Remaining full balance of " + (course.getFee() - existPayment.getFirstPaymentAmount()) + " is required for the last payment.");
         }
+    }
+
+    @Override
+    public List<NotificationDto> getUpcomingPayments() {
+        LocalDateTime now = LocalDateTime.now();
+        List<Payment> upcomingPayments = paymentRepository.findUpcomingPayments(now, now.plusDays(7), PaymentStatus.PENDING);
+
+        return upcomingPayments.stream().map(payment -> {
+            var studentResponseDto = StudentResponseDto.builder()
+                    .studentId(payment.getStudent().getStudentId())
+                    .firstName(payment.getStudent().getFirstName())
+                    .middleName(payment.getStudent().getMiddleName())
+                    .lastName(payment.getStudent().getLastName())
+                    .whatsAppNum(payment.getStudent().getWhatsappNum())
+                    .address(payment.getStudent().getAddress())
+                    .build();
+
+            return NotificationDto.builder()
+                    .firstPaymentAmount(payment.getFirstPaymentAmount())
+                    .firstPaymentDate(payment.getFirstPaymentDate())
+                    .nextPaymentDate(payment.getNextPaymentDate())
+                    .paymentStatus(payment.getPaymentStatus())
+                    .studentResponseDto(studentResponseDto)
+                    .build();
+        }).toList();
     }
 }

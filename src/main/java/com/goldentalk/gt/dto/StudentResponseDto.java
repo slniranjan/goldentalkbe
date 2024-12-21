@@ -10,7 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Data
-//@Builder
+@Builder
 public class StudentResponseDto {
 
   private String studentId;
