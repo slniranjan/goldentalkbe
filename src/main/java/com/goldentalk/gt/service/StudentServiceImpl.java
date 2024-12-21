@@ -216,6 +216,7 @@ public class StudentServiceImpl implements StudentService {
                 .orElseThrow(() -> new NotFoundException("Student not found for the id " + studentId));
 
         student.setDeleted(true);
+        student.getPayments().forEach(payment -> payment.setDeleted(true));
         Student savedStudent = studentRepository.save(student);
 
         return StudentResponseDto.builder()
@@ -268,11 +269,25 @@ public class StudentServiceImpl implements StudentService {
         }
     }
 
+    /**
+     * Upcoming payments consider only within next 7 days
+     * @return
+     */
     @Override
     public List<NotificationDto> getUpcomingPayments() {
         LocalDateTime now = LocalDateTime.now();
-        List<Payment> upcomingPayments = paymentRepository.findUpcomingPayments(now, now.plusDays(7), PaymentStatus.PENDING);
+        List<Payment> upcomingPayments = paymentRepository.findUpcomingPayments(now, now.plusDays(7), PaymentStatus.PENDING, false);
 
+        return getNotificationDtos(upcomingPayments);
+    }
+
+    @Override
+    public List<NotificationDto> getDelayPayments() {
+        List<Payment>  delayPayments = paymentRepository.findByNextPaymentDateBeforeAndDeleted(LocalDateTime.now(), false);
+        return getNotificationDtos(delayPayments);
+    }
+
+    private static List<NotificationDto> getNotificationDtos(List<Payment> upcomingPayments) {
         return upcomingPayments.stream().map(payment -> {
             var studentResponseDto = StudentResponseDto.builder()
                     .studentId(payment.getStudent().getStudentId())

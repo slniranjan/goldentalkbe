@@ -76,4 +76,11 @@ public class StudentController {
 
         return studentService.getUpcomingPayments();
     }
+
+    @GetMapping("/delaying")
+    @ResponseStatus(value = HttpStatus.OK)
+    public List<NotificationDto> getDelayingPayments() {
+
+        return studentService.getDelayPayments();
+    }
 }

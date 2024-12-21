@@ -249,6 +249,23 @@
 					"response": []
 				},
 				{
+					"name": "Get delay payments",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}students/delaying",
+							"host": [
+								"{{base_url}}students"
+							],
+							"path": [
+								"delaying"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Delete student by student id",
 					"request": {
 						"method": "DELETE",

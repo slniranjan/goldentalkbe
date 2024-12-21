@@ -22,4 +22,6 @@ public interface StudentService {
   StudentResponseDto updateSecondPayment(String studentId, Integer courseid, Double payment);
 
   List<NotificationDto> getUpcomingPayments();
+
+  List<NotificationDto> getDelayPayments();
 }
