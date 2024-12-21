@@ -123,4 +123,12 @@ public class TeacherServiceImpl implements TeacherService {
         return teacherMapper.teacherToTeacherResponseDto(updatedTeacher);
     }
 
+    @Override
+    public List<TeacherResponseDto> retrieveTeachersInSection(Integer sectionId) {
+        sectionRepository.findById(sectionId).orElseThrow(() -> new NotFoundException("Section not found for the given id " + sectionId));
+        List<Teacher> teachers = teacherRepository.findBySectionIdAndIsDeleted(sectionId, false);
+
+        return teacherMapper.teacherToTeacherResponseDto(teachers);
+    }
+
 }

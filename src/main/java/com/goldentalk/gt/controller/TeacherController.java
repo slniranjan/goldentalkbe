@@ -162,4 +162,28 @@ public class TeacherController {
 
     }
 
+    @Operation(
+            summary = "Get Teachers REST API",
+            description = "REST API to Get Teacher by sectionId"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "HTTP Status OK"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "HTTP Status bad request",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorResponseDto.class)
+                    )
+            )
+    }
+    )
+    @GetMapping("/section/{sectionId}")
+    public ResponseEntity<List<TeacherResponseDto>> retrieveTeacherBySectionId(@PathVariable Integer sectionId) {
+
+        return new ResponseEntity<>(teacherService.retrieveTeachersInSection(sectionId), HttpStatus.OK);
+    }
+
 }

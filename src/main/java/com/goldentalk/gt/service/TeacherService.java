@@ -19,4 +19,5 @@ public interface TeacherService {
 
     TeacherResponseDto updateTeacher(Integer id, TeacherRequestDto request);
 
+    List<TeacherResponseDto> retrieveTeachersInSection(Integer sectionId);
 }

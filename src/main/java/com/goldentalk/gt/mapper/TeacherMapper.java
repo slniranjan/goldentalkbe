@@ -29,6 +29,11 @@ public interface TeacherMapper {
     @Mapping(source = "qualifications", target = "qualifications", qualifiedByName = "mapQualificationsName")
     TeacherResponseDto teacherToTeacherResponseDto(Teacher teacher);
 
+    @Mapping(source = "section.sectionName", target = "sectionName")
+    @Mapping(source = "courses", target = "courseNames", qualifiedByName = "mapCoursesName")
+    @Mapping(source = "qualifications", target = "qualifications", qualifiedByName = "mapQualificationsName")
+    List<TeacherResponseDto> teacherToTeacherResponseDto(List<Teacher> teacher);
+
     // Custom method to map student IDs to List<String>
     @Named("mapCoursesName")
     default Set<String> mapCoursesName(Set<Course> courses) {
