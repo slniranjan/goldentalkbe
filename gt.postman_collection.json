@@ -232,6 +232,26 @@
 					"response": []
 				},
 				{
+					"name": "Get all students",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}students?deleted=true",
+							"host": [
+								"{{base_url}}students"
+							],
+							"query": [
+								{
+									"key": "deleted",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Get upcoming payments",
 					"request": {
 						"method": "GET",
