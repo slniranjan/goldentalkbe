@@ -55,6 +55,9 @@ public class LoggingAspect {
   }
 
   private String filteredFields(Object result) {
+    if (result == null)
+      return "";
+
     StringBuilder filterdField = new StringBuilder();
 
     Field[] fields = result.getClass().getDeclaredFields();

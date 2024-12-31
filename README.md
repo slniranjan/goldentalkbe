@@ -19,3 +19,8 @@ https://github.com/google/styleguide/blob/gh-pages/eclipse-java-google-style.xml
 
 1. http://localhost:8080/swagger-ui/index.html
 
+## Generate RSA Keys
+- openssl genpkey -algorithm RSA -out private.pem -pkeyopt rsa_keygen_bits:2048
+- openssl rsa -in private.pem -pubout -out public.pem
+
+
