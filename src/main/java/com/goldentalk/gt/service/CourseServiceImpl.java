@@ -32,7 +32,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public CourseResponseDto retrieveCourse(Integer id) {
 
-        Course course = courseRepository.findByIdAndIsDeleted(id, false)
+        Course course = courseRepository.findActiveCourseById(id, false)
                 .orElseThrow(() -> new NotFoundException("Course Not found for the id " + id));
 
         return courseMapper.courseToCourseResponseDto(course);
@@ -42,7 +42,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public CourseResponseDto addCourseToTeacher(Integer courseId, Integer teacherId) {
 
-        Course course = courseRepository.findByIdAndIsDeleted(courseId, false)
+        Course course = courseRepository.findActiveCourseById(courseId, false)
                 .orElseThrow(() -> new NotFoundException("Course Not found for the id " + courseId));
 
         Teacher teacher = teacherRepository.findByIdAndIsDeleted(teacherId, false)
@@ -79,7 +79,7 @@ public class CourseServiceImpl implements CourseService {
         if (status == 0)
             throw new NotFoundException("Course not found for the id " + id);
 
-        Optional<Course> course = courseRepository.findByIdAndIsDeleted(id, false);
+        Optional<Course> course = courseRepository.findActiveCourseById(id, false);
 
         return courseMapper.courseToCourseResponseDto(course.get());
 
@@ -87,7 +87,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<CourseResponseDto> retriveAllCourses() {
-        List<Course> courseList = courseRepository.findAll();
+        List<Course> courseList = courseRepository.findAllActiveCourses(false);
 
         return courseMapper.courseToCourseResponseDto(courseList);
     }

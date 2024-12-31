@@ -1,13 +1,7 @@
 package com.goldentalk.gt.repository;
 
-import com.goldentalk.gt.dto.CreateCourseRequestDto;
-import com.goldentalk.gt.dto.UpdateCourseRequestDto;
 import com.goldentalk.gt.entity.Course;
 import com.goldentalk.gt.entity.Section;
-import com.goldentalk.gt.entity.enums.PaymentStatus;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -22,7 +16,11 @@ public interface CourseRepository extends JpaRepository<Course, Integer> {
 
     Set<Course> findByIdInAndIsDeleted(Set<Integer> id, boolean isDeleted);
 
-    Optional<Course> findByIdAndIsDeleted(Integer id, boolean isDeleted);
+    @Query("SELECT c FROM Course c JOIN FETCH c.students s WHERE s.deleted = false AND c.id = :id AND c.isDeleted = :isDeleted")
+    Optional<Course> findActiveCourseById(Integer id, boolean isDeleted);
+
+    @Query("SELECT c FROM Course c JOIN FETCH c.students s WHERE s.deleted = false AND c.isDeleted = :isDeleted")
+    List<Course> findAllActiveCourses(boolean isDeleted);
 
     Optional<Course> findByNameAndIsDeleted(String name, boolean isDeleted);
 

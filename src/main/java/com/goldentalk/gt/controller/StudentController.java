@@ -1,10 +1,9 @@
 package com.goldentalk.gt.controller;
 
 import com.goldentalk.gt.dto.NotificationDto;
-import com.goldentalk.gt.entity.Payment;
-import com.goldentalk.gt.entity.Student;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,6 +46,11 @@ public class StudentController {
         return new ResponseEntity<>(student, headers, HttpStatus.CREATED);
     }
 
+    @GetMapping("")
+    public List<StudentResponseDto> getAllStudents(@Param("deleted") Boolean deleted) {
+        return studentService.getAllStudents(deleted);
+    }
+
     @GetMapping("/{studentId}")
     public StudentResponseDto retrieveStudent(@PathVariable String studentId) {
         return studentService.retrieveStudents(studentId);
@@ -54,33 +58,28 @@ public class StudentController {
 
     @PutMapping("/{studentId}")
     public CreateAndUpdateStudentResponse updateStudent(@PathVariable String studentId, @Validated @RequestBody CreateAndUpdateStudentRequest request) {
-
         return studentService.updateStudent(studentId, request);
     }
 
     @PutMapping(value = "/{studentId}/courses/{courseId}", params = "payment")
     public StudentResponseDto updatePayment(@PathVariable String studentId, @PathVariable Integer courseId, @RequestParam Double payment) {
-
         return studentService.updateSecondPayment(studentId, courseId, payment);
     }
 
     @DeleteMapping("/{student-id}")
     public ResponseEntity<StudentResponseDto> deleteStudent(@PathVariable("student-id") String studentId) {
-
         return ResponseEntity.ok(studentService.deleteStudent(studentId));
     }
 
     @GetMapping("/notifications")
     @ResponseStatus(value = HttpStatus.OK)
     public List<NotificationDto> getUpcomingPayments() {
-
         return studentService.getUpcomingPayments();
     }
 
     @GetMapping("/delaying")
     @ResponseStatus(value = HttpStatus.OK)
     public List<NotificationDto> getDelayingPayments() {
-
         return studentService.getDelayPayments();
     }
 }

@@ -42,7 +42,7 @@ public class StudentServiceImpl implements StudentService {
 
     private CreateAndUpdateStudentResponse saveUpdateStudent(CreateAndUpdateStudentRequest request) {
 
-        Course course = courseRepository.findByIdAndIsDeleted(request.getCourseId(), false)
+        Course course = courseRepository.findActiveCourseById(request.getCourseId(), false)
                 .orElseThrow(() -> new NotFoundException("Course not found for the given id " + request.getCourseId()));
 
         Section section = sectionRepository
@@ -127,86 +127,9 @@ public class StudentServiceImpl implements StudentService {
         return transformStudentToStudentResponseDto(student, payments);
     }
 
-    private StudentResponseDto transformStudentToStudentResponseDto(Student student, List<Payment> payments) {
-
-        List<PaymentDetailsDTO> paymentDetails = payments.stream().map(p -> PaymentDetailsDTO.builder()
-                .firstPaymentAmount(p.getFirstPaymentAmount())
-                .secondPaymentAmount(p.getSecondPaymentAmount())
-                .paymentStatus(p.getPaymentStatus())
-                .build()
-        ).toList();
-
-        return StudentResponseDto.builder()
-                .studentId(student.getStudentId())
-                .firstName(student.getFirstName())
-                .middleName(student.getMiddleName())
-                .lastName(student.getLastName())
-                .whatsAppNum(student.getWhatsappNum())
-                .address(student.getAddress())
-                .section(student.getSections().stream().map(s -> s.getId().toString()).collect(Collectors.toSet()))
-                .course(student.getCourses().stream().map(c -> c.getId().toString()).collect(Collectors.toSet()))
-                .payments(paymentDetails)
-                .build();
-
-
-//        StudentResponseDto response = new StudentResponseDto();
-//
-//        response.setStudentId(student.getStudentId());
-//        response.setFirstName(student.getFirstName());
-//        response.setMiddleName(student.getMiddleName());
-//        response.setLastName(student.getLastName());
-//        response.setWhatsAppNum(student.getWhatsappNum());
-//
-//        response.setAddress(student.getAddress());
-
-//        Set<String> sectionsIds = student.getSections().stream().map(s -> s.getId().toString()).collect(Collectors.toSet());
-//        response.setSection(sectionsIds);
-//
-//        Set<String> courseIds = student.getCourses().stream().map(c -> c.getId().toString()).collect(Collectors.toSet());
-//        response.setCourse(courseIds);
-
-
-//        response.setDob(student.getDob());
-
-//        List<PaymentDetailsDTO> paymentDetails = payments.stream().map(pay -> {
-//            PaymentDetailsDTO details = new PaymentDetailsDTO();
-//
-//      details.setCourseId(pay.getCourse().getCourseId());
-//            details.setPaymentId(pay.getPaymentId());
-//            details.setPaymentStatus(pay.getPaymentStatus());
-//      details.setPaidAmount(pay.getPaidAmount());
-//      
-//      List<InstallmentDTO> installments = pay.getInstallments().stream().map(inst -> {
-//        InstallmentDTO installmentDto = new InstallmentDTO();
-//        installmentDto.setId(inst.getId());
-//        installmentDto.setPaymentAmount(inst.getPaymentAmount());
-//        installmentDto.setPaymentDate(inst.getPaymentDate());
-//        return installmentDto;
-//      }).toList();
-//      
-//      details.getInstallments().addAll(installments);
-
-//            return details;
-//        }).toList();
-
-//        response.getPayments().addAll(paymentDetails);
-
-//        return response;
-
-    }
-
     @Override
     public CreateAndUpdateStudentResponse updateStudent(String studentId,
                                                         CreateAndUpdateStudentRequest request) {
-
-        /*Assert.hasText(studentId, "Student Id should not be null or Empty");
-
-        Student student = studentRepository.findByStudentIdAndDeleted(studentId, false);
-
-        if (student == null) {
-            throw new NotFoundException("Student not found for the id " + studentId);
-        }*/
-
         return saveUpdateStudent(request);
     }
 
@@ -227,18 +150,6 @@ public class StudentServiceImpl implements StudentService {
                 .course(savedStudent.getCourses().stream().map(Course::getName).collect(Collectors.toSet()))
                 .address(savedStudent.getAddress())
                 .build();
-
-//        StudentResponseDto studentResponseDto = new StudentResponseDto();
-
-//        studentResponseDto.setStudentId(savedStudent.getStudentId());
-//        studentResponseDto.setFirstName(savedStudent.getFirstName());
-//        studentResponseDto.setMiddleName(savedStudent.getMiddleName());
-//        studentResponseDto.setLastName(savedStudent.getLastName());
-//
-//        studentResponseDto.setCourse(savedStudent.getCourses().stream().map(Course::getName).collect(Collectors.toSet()));
-//        studentResponseDto.setAddress(savedStudent.getAddress());
-//
-//        return studentResponseDto;
     }
 
     @Transactional
@@ -248,7 +159,7 @@ public class StudentServiceImpl implements StudentService {
         Student student = studentRepository.findStudentByStudentIdAndCourseId(studentId, courseId)
                 .orElseThrow(() -> new NotFoundException("Student " + studentId + " not registered for the course " + courseId));
 
-        Course course = courseRepository.findByIdAndIsDeleted(courseId, false)
+        Course course = courseRepository.findActiveCourseById(courseId, false)
                 .orElseThrow(() -> new NotFoundException("Course not found for the id " + courseId));
 
         Payment existPayment = student.getPayments().stream()
@@ -271,6 +182,7 @@ public class StudentServiceImpl implements StudentService {
 
     /**
      * Upcoming payments consider only within next 7 days
+     *
      * @return
      */
     @Override
@@ -283,11 +195,18 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public List<NotificationDto> getDelayPayments() {
-        List<Payment>  delayPayments = paymentRepository.findByNextPaymentDateBeforeAndDeleted(LocalDateTime.now(), false);
+        List<Payment> delayPayments = paymentRepository.findByNextPaymentDateBeforeAndDeleted(LocalDateTime.now(), false);
         return getNotificationDtos(delayPayments);
     }
 
-    private static List<NotificationDto> getNotificationDtos(List<Payment> upcomingPayments) {
+    @Override
+    public List<StudentResponseDto> getAllStudents(Boolean deleted) {
+        List<Student> students = studentRepository.findAllActiveOrDeleted(deleted);
+        return students.stream()
+                .map(student -> transformStudentToStudentResponseDto(student, student.getPayments().stream().toList())).toList();
+    }
+
+    private List<NotificationDto> getNotificationDtos(List<Payment> upcomingPayments) {
         return upcomingPayments.stream().map(payment -> {
             var studentResponseDto = StudentResponseDto.builder()
                     .studentId(payment.getStudent().getStudentId())
@@ -306,5 +225,27 @@ public class StudentServiceImpl implements StudentService {
                     .studentResponseDto(studentResponseDto)
                     .build();
         }).toList();
+    }
+
+    private StudentResponseDto transformStudentToStudentResponseDto(Student student, List<Payment> payments) {
+
+        List<PaymentDetailsDTO> paymentDetails = payments.stream().map(p -> PaymentDetailsDTO.builder()
+                .firstPaymentAmount(p.getFirstPaymentAmount())
+                .secondPaymentAmount(p.getSecondPaymentAmount())
+                .paymentStatus(p.getPaymentStatus())
+                .build()
+        ).toList();
+
+        return StudentResponseDto.builder()
+                .studentId(student.getStudentId())
+                .firstName(student.getFirstName())
+                .middleName(student.getMiddleName())
+                .lastName(student.getLastName())
+                .whatsAppNum(student.getWhatsappNum())
+                .address(student.getAddress())
+                .section(student.getSections().stream().map(s -> s.getId().toString()).collect(Collectors.toSet()))
+                .course(student.getCourses().stream().map(c -> c.getId().toString()).collect(Collectors.toSet()))
+                .payments(paymentDetails)
+                .build();
     }
 }
