@@ -21,10 +21,13 @@ public class TeacherResponseDto {
 
   private String phoneNumber;
 
-  private String sectionName;
+  private SectionResponseDTO section;
+//  private String sectionName;
 
-  private Set<String> courseNames;
+  private Set<CourseResponseDto> courses;
+//  private Set<String> courseNames;
 
-  private Set<String> qualifications;
+  private Set<QualificationResponseDto> qualifications;
+//  private Set<String> qualifications;
 
 }

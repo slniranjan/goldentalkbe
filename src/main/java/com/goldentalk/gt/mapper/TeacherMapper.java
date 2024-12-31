@@ -24,9 +24,10 @@ public interface TeacherMapper {
     @Mapping(target = "teacher", ignore = true)
     Set<Qualification> qualificationDtoToQualification(Set<TeacherQualificationDTO> teacherQualificationDtos);
 
-    @Mapping(source = "section.sectionName", target = "sectionName")
-    @Mapping(source = "courses", target = "courseNames", qualifiedByName = "mapCoursesName")
-    @Mapping(source = "qualifications", target = "qualifications", qualifiedByName = "mapQualificationsName")
+//    @Mapping(source = "section.sectionName", target = "sectionName")
+//    @Mapping(source = "section", target = "section")
+//    @Mapping(source = "courses", target = "courseNames", qualifiedByName = "mapCoursesName")
+//    @Mapping(source = "qualifications", target = "qualifications", qualifiedByName = "mapQualificationsName")
     TeacherResponseDto teacherToTeacherResponseDto(Teacher teacher);
 
     @Mapping(source = "section.sectionName", target = "sectionName")
