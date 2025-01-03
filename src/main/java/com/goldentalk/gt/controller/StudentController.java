@@ -1,6 +1,6 @@
 package com.goldentalk.gt.controller;
 
-import com.goldentalk.gt.dto.NotificationDto;
+import com.goldentalk.gt.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.repository.query.Param;
@@ -9,9 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import com.goldentalk.gt.dto.CreateAndUpdateStudentRequest;
-import com.goldentalk.gt.dto.CreateAndUpdateStudentResponse;
-import com.goldentalk.gt.dto.StudentResponseDto;
 import com.goldentalk.gt.service.StudentService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -29,7 +26,7 @@ public class StudentController {
     private StudentService studentService;
 
     @PostMapping
-    public ResponseEntity<CreateAndUpdateStudentResponse> createStudent(@Validated @RequestBody CreateAndUpdateStudentRequest request) {
+    public ResponseEntity<CreateAndUpdateStudentResponse> createStudent(@Validated @RequestBody CreateStudentRequest request) {
         logger.info("Creating a student");
 
         CreateAndUpdateStudentResponse student = studentService.createStudent(request);
@@ -57,13 +54,18 @@ public class StudentController {
     }
 
     @PutMapping("/{studentId}")
-    public CreateAndUpdateStudentResponse updateStudent(@PathVariable String studentId, @Validated @RequestBody CreateAndUpdateStudentRequest request) {
+    public CreateAndUpdateStudentResponse updateStudent(@PathVariable String studentId, @Validated @RequestBody UpdateStudentInfoOnlyRequest request) {
         return studentService.updateStudent(studentId, request);
     }
 
     @PutMapping(value = "/{studentId}/courses/{courseId}", params = "payment")
     public StudentResponseDto updatePayment(@PathVariable String studentId, @PathVariable Integer courseId, @RequestParam Double payment) {
         return studentService.updateSecondPayment(studentId, courseId, payment);
+    }
+
+    @PostMapping(value = "/{studentId}/courses/{courseId}")
+    public CreateAndUpdateStudentResponse addStudentToNewCourse(@PathVariable String studentId, @PathVariable Integer courseId, @Validated @RequestBody PaymentDetailsDTO request) {
+        return studentService.addStudentToNewCourse(studentId, courseId, request);
     }
 
     @DeleteMapping("/{student-id}")

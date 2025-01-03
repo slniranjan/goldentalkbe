@@ -16,10 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,80 +33,8 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     @Transactional
-    public CreateAndUpdateStudentResponse createStudent(CreateAndUpdateStudentRequest request) {
-        return saveUpdateStudent(request);
-    }
-
-    private CreateAndUpdateStudentResponse saveUpdateStudent(CreateAndUpdateStudentRequest request) {
-
-        Course course = courseRepository.findActiveCourseById(request.getCourseId(), false)
-                .orElseThrow(() -> new NotFoundException("Course not found for the given id " + request.getCourseId()));
-
-        Section section = sectionRepository
-                .findByIdAndDeleted(request.getSectionId(), false)
-                .orElseThrow(() -> new NotFoundException("Section Not Found for the given id " + request.getSectionId()));
-
-        courseRepository.findByIdAndSectionAndIsDeleted(request.getCourseId(), section, false)
-                .orElseThrow(() -> new NotFoundException("Given course " + course.getName() +
-                        " doesn't include in " + section.getSectionName() + " section"));
-
-        /*Validating payment details for the selected course before save the student*/
-
-        Payment payment = new Payment();
-        String message = "";
-        Student stu = new Student();
-        PaymentStatus paymentStatus = null;
-        if (course.getInstallment()) {
-            if (course.getFee() <= request.getPayment().getFirstPaymentAmount()) {
-                paymentStatus = PaymentStatus.COMPLETED;
-                message = "Full payment done. Student successfully registered!";
-            } else {
-                paymentStatus = PaymentStatus.PENDING;
-                message = "Partial payment done. Student successfully registered!";
-            }
-        } else {
-            if (course.getFee() <= request.getPayment().getFirstPaymentAmount()) {
-                paymentStatus = PaymentStatus.COMPLETED;
-                message = "Full payment done. Student successfully registered!";
-            } else if (course.getFee() > request.getPayment().getFirstPaymentAmount()) {
-                throw new LowPaymentException("Full payment of " + course.getFee() + " is required to register this course");
-            }
-        }
-
-        Address address = Address.builder()
-                .street(request.getAddress().getStreet())
-                .city(request.getAddress().getCity())
-                .district(request.getAddress().getDistrict())
-                .province(request.getAddress().getProvince())
-                .build();
-
-        Student student = Student.builder()
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .middleName(request.getMiddleName())
-                .whatsappNum(request.getWhatsAppNumber())
-                .sections(Set.of(section))
-                .address(address)
-                .courses(Set.of(course))
-                .build();
-
-        stu = studentRepository.save(student);
-
-        payment = Payment.builder()
-                .paymentStatus(paymentStatus)
-                .firstPaymentAmount(request.getPayment().getFirstPaymentAmount())
-                .student(stu)
-                .course(course)
-                .build();
-
-        Payment save = paymentRepository.save(payment);
-
-        return CreateAndUpdateStudentResponse.builder()
-                .studentId(stu.getStudentId())
-                .id(stu.getId())
-                .message(message)
-                .build();
-
+    public CreateAndUpdateStudentResponse createStudent(CreateStudentRequest request) {
+        return createNewStudent(request);
     }
 
     @Override
@@ -121,7 +46,7 @@ public class StudentServiceImpl implements StudentService {
 
         List<Payment> payments = Collections.emptyList();
         if (!student.getCourses().isEmpty()) {
-            payments = student.getPayments().stream().collect(Collectors.toList());
+            payments = new ArrayList<>(student.getPayments());
         }
 
         return transformStudentToStudentResponseDto(student, payments);
@@ -129,8 +54,8 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public CreateAndUpdateStudentResponse updateStudent(String studentId,
-                                                        CreateAndUpdateStudentRequest request) {
-        return saveUpdateStudent(request);
+                                                        UpdateStudentInfoOnlyRequest request) {
+        return changeStudentInfoOnly(studentId, request);
     }
 
     @Override
@@ -206,6 +131,67 @@ public class StudentServiceImpl implements StudentService {
                 .map(student -> transformStudentToStudentResponseDto(student, student.getPayments().stream().toList())).toList();
     }
 
+    @Override
+    @Transactional
+    public CreateAndUpdateStudentResponse addStudentToNewCourse(String studentId, Integer courseId, PaymentDetailsDTO request) {
+        Student student = studentRepository.findByStudentIdAndDeleted(studentId, false)
+                .orElseThrow(() -> new NotFoundException(studentId + " is not registered"));
+
+        Optional<Student> assignedStudent = studentRepository.findStudentByStudentIdAndCourseId(studentId, courseId);
+//                .orElseThrow(() -> new IllegalArgumentException(studentId + " has already registered for the course " + courseId));
+
+        if (assignedStudent.isEmpty()) {
+            Course course = courseRepository.findActiveCourseById(courseId, false)
+                    .orElseThrow(() -> new NotFoundException("Course not found for the given id " + courseId));
+
+            /*Validating payment details for the selected course before save the student*/
+
+            Payment payment = new Payment();
+            String message = "";
+            PaymentStatus paymentStatus = null;
+            if (course.getInstallment()) {
+                if (course.getFee() <= request.getFirstPaymentAmount()) {
+                    paymentStatus = PaymentStatus.COMPLETED;
+                    message = "Full payment done. Student successfully registered!";
+                } else {
+                    paymentStatus = PaymentStatus.PENDING;
+                    message = "Partial payment done. Student successfully registered!";
+                }
+            } else {
+                if (course.getFee() <= request.getFirstPaymentAmount()) {
+                    paymentStatus = PaymentStatus.COMPLETED;
+                    message = "Full payment done. Student successfully registered!";
+                } else if (course.getFee() > request.getFirstPaymentAmount()) {
+                    throw new LowPaymentException("Full payment of " + course.getFee() + " is required to register this course");
+                }
+            }
+
+            Set<Course> courses = student.getCourses();
+            courses.add(course);
+
+            student.setCourses(courses);
+
+            Student stu = studentRepository.save(student);
+
+            payment = Payment.builder()
+                    .paymentStatus(paymentStatus)
+                    .firstPaymentAmount(request.getFirstPaymentAmount())
+                    .student(stu)
+                    .course(course)
+                    .build();
+
+            Payment save = paymentRepository.save(payment);
+
+            return CreateAndUpdateStudentResponse.builder()
+                    .studentId(stu.getStudentId())
+                    .id(stu.getId())
+                    .message(message)
+                    .build();
+        } else {
+            throw new IllegalArgumentException(studentId + " has already registered for the course " + courseId);
+        }
+    }
+
     private List<NotificationDto> getNotificationDtos(List<Payment> upcomingPayments) {
         return upcomingPayments.stream().map(payment -> {
             var studentResponseDto = StudentResponseDto.builder()
@@ -248,4 +234,103 @@ public class StudentServiceImpl implements StudentService {
                 .payments(paymentDetails)
                 .build();
     }
+
+    private CreateAndUpdateStudentResponse createNewStudent(CreateStudentRequest request) {
+
+        Course course = courseRepository.findActiveCourseById(request.getCourseId(), false)
+                .orElseThrow(() -> new NotFoundException("Course not found for the given id " + request.getCourseId()));
+
+        Section section = sectionRepository
+                .findByIdAndDeleted(request.getSectionId(), false)
+                .orElseThrow(() -> new NotFoundException("Section Not Found for the given id " + request.getSectionId()));
+
+        courseRepository.findByIdAndSectionAndIsDeleted(request.getCourseId(), section, false)
+                .orElseThrow(() -> new NotFoundException("Given course " + course.getName() +
+                        " doesn't include in " + section.getSectionName() + " section"));
+
+        /*Validating payment details for the selected course before save the student*/
+
+        Payment payment = new Payment();
+        String message = "";
+        Student stu = new Student();
+        PaymentStatus paymentStatus = null;
+        if (course.getInstallment()) {
+            if (course.getFee() <= request.getPayment().getFirstPaymentAmount()) {
+                paymentStatus = PaymentStatus.COMPLETED;
+                message = "Full payment done. Student successfully registered!";
+            } else {
+                paymentStatus = PaymentStatus.PENDING;
+                message = "Partial payment done. Student successfully registered!";
+            }
+        } else {
+            if (course.getFee() <= request.getPayment().getFirstPaymentAmount()) {
+                paymentStatus = PaymentStatus.COMPLETED;
+                message = "Full payment done. Student successfully registered!";
+            } else if (course.getFee() > request.getPayment().getFirstPaymentAmount()) {
+                throw new LowPaymentException("Full payment of " + course.getFee() + " is required to register this course");
+            }
+        }
+
+        Address address = Address.builder()
+                .street(request.getAddress().getStreet())
+                .city(request.getAddress().getCity())
+                .district(request.getAddress().getDistrict())
+                .province(request.getAddress().getProvince())
+                .build();
+
+        Student student = Student.builder()
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .middleName(request.getMiddleName())
+                .whatsappNum(request.getWhatsAppNumber())
+                .sections(Set.of(section))
+                .address(address)
+                .courses(Set.of(course))
+                .build();
+
+        stu = studentRepository.save(student);
+
+        payment = Payment.builder()
+                .paymentStatus(paymentStatus)
+                .firstPaymentAmount(request.getPayment().getFirstPaymentAmount())
+                .student(stu)
+                .course(course)
+                .build();
+
+        Payment save = paymentRepository.save(payment);
+
+        return CreateAndUpdateStudentResponse.builder()
+                .studentId(stu.getStudentId())
+                .id(stu.getId())
+                .message(message)
+                .build();
+
+    }
+
+    private CreateAndUpdateStudentResponse changeStudentInfoOnly(String id, UpdateStudentInfoOnlyRequest request) {
+
+        Student student = studentRepository.findByStudentIdAndDeleted(id, false)
+                .orElseThrow(() -> new NotFoundException("Student ID: " + id + " not found"));
+
+        Address address = student.getAddress();
+        address.setStreet(request.getAddress().getStreet());
+        address.setCity(request.getAddress().getCity());
+        address.setDistrict(request.getAddress().getDistrict());
+        address.setProvince(request.getAddress().getProvince());
+
+        student.setFirstName(request.getFirstName());
+        student.setLastName(request.getLastName());
+        student.setMiddleName(request.getMiddleName());
+        student.setWhatsappNum(request.getWhatsAppNumber());
+        student.setAddress(address);
+
+        Student stu = studentRepository.save(student);
+
+        return CreateAndUpdateStudentResponse.builder()
+                .studentId(stu.getStudentId())
+                .id(stu.getId())
+                .message("Student successfully updated")
+                .build();
+    }
+
 }

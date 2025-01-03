@@ -16,10 +16,12 @@ public interface CourseRepository extends JpaRepository<Course, Integer> {
 
     Set<Course> findByIdInAndIsDeleted(Set<Integer> id, boolean isDeleted);
 
-    @Query("SELECT c FROM Course c JOIN FETCH c.students s WHERE s.deleted = false AND c.id = :id AND c.isDeleted = :isDeleted")
+    @Query("SELECT c FROM Course c WHERE c.id = :id AND c.isDeleted = :isDeleted")
+//    @Query("SELECT c FROM Course c JOIN FETCH c.students s WHERE s.deleted = false AND c.id = :id AND c.isDeleted = :isDeleted")
     Optional<Course> findActiveCourseById(Integer id, boolean isDeleted);
 
-    @Query("SELECT c FROM Course c JOIN FETCH c.students s WHERE s.deleted = false AND c.isDeleted = :isDeleted")
+    @Query("SELECT c FROM Course c WHERE c.isDeleted = :isDeleted")
+//    @Query("SELECT c FROM Course c JOIN FETCH c.students s WHERE s.deleted = false AND c.isDeleted = :isDeleted")
     List<Course> findAllActiveCourses(boolean isDeleted);
 
     Optional<Course> findByNameAndIsDeleted(String name, boolean isDeleted);

@@ -6,6 +6,7 @@ import com.goldentalk.gt.dto.CreateCourseResponseDto;
 import com.goldentalk.gt.dto.UpdateCourseRequestDto;
 import com.goldentalk.gt.entity.Course;
 import com.goldentalk.gt.entity.Section;
+import com.goldentalk.gt.entity.Student;
 import com.goldentalk.gt.entity.Teacher;
 import com.goldentalk.gt.exception.AlreadyExistsException;
 import com.goldentalk.gt.exception.NotFoundException;
@@ -19,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -89,6 +92,16 @@ public class CourseServiceImpl implements CourseService {
     public List<CourseResponseDto> retriveAllCourses() {
         List<Course> courseList = courseRepository.findAllActiveCourses(false);
 
-        return courseMapper.courseToCourseResponseDto(courseList);
+        // Filter active students in each course
+        List<Course> updatedCourses = courseList.stream()
+                .peek(course -> {
+                    Set<Student> activeStudents = course.getStudents().stream()
+                            .filter(s -> !s.isDeleted())
+                            .collect(Collectors.toSet());
+                    course.setStudents(activeStudents);
+                })
+                .toList();
+
+        return courseMapper.courseToCourseResponseDto(updatedCourses);
     }
 }

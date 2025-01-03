@@ -1,19 +1,16 @@
 package com.goldentalk.gt.service;
 
-import com.goldentalk.gt.dto.CreateAndUpdateStudentRequest;
-import com.goldentalk.gt.dto.CreateAndUpdateStudentResponse;
-import com.goldentalk.gt.dto.NotificationDto;
-import com.goldentalk.gt.dto.StudentResponseDto;
+import com.goldentalk.gt.dto.*;
 
 import java.util.List;
 
 public interface StudentService {
 
-  CreateAndUpdateStudentResponse createStudent(CreateAndUpdateStudentRequest request);
+  CreateAndUpdateStudentResponse createStudent(CreateStudentRequest request);
   
   StudentResponseDto retrieveStudents(String studentId);
   
-  CreateAndUpdateStudentResponse updateStudent(String studentId, CreateAndUpdateStudentRequest request);
+  CreateAndUpdateStudentResponse updateStudent(String studentId, UpdateStudentInfoOnlyRequest request);
 
   StudentResponseDto deleteStudent(String studentId);
 
@@ -24,4 +21,6 @@ public interface StudentService {
   List<NotificationDto> getDelayPayments();
 
   List<StudentResponseDto> getAllStudents(Boolean deleted);
+
+  CreateAndUpdateStudentResponse addStudentToNewCourse(String studentId, Integer courseId, PaymentDetailsDTO request);
 }
