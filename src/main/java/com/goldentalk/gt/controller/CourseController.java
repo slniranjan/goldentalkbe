@@ -151,4 +151,27 @@ public class CourseController {
     public List<CourseResponseDto> retrieveCourses() {
         return courseService.retriveAllCourses();
     }
+
+    @Operation(
+            summary = "Retrieve all courses in section REST API",
+            description = "Retrieve all courses in section REST API"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "HTTP Status OK"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "HTTP Status bad request",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorResponseDto.class)
+                    )
+            )
+    }
+    )
+    @GetMapping("/section/{sectionId}")
+    public List<CourseResponseDto> retrieveCoursesBySection(@PathVariable("sectionId") Integer sectionId) {
+        return courseService.retrieveAllCoursesInSection(sectionId);
+    }
 }

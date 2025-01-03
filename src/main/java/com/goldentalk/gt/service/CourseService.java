@@ -9,13 +9,15 @@ import com.goldentalk.gt.dto.UpdateCourseRequestDto;
 
 public interface CourseService {
 
-  CourseResponseDto retrieveCourse(Integer courseId);
-  
-  List<CourseResponseDto> retriveAllCourses();
-  
-  CourseResponseDto addCourseToTeacher(Integer courseId, Integer teacherId);
-  
-  CreateCourseResponseDto createCourse(CreateCourseRequestDto request);
-  
-  CourseResponseDto updateCourse(Integer id, UpdateCourseRequestDto request);
+    CourseResponseDto retrieveCourse(Integer courseId);
+
+    List<CourseResponseDto> retriveAllCourses();
+
+    CourseResponseDto addCourseToTeacher(Integer courseId, Integer teacherId);
+
+    CreateCourseResponseDto createCourse(CreateCourseRequestDto request);
+
+    CourseResponseDto updateCourse(Integer id, UpdateCourseRequestDto request);
+
+    List<CourseResponseDto> retrieveAllCoursesInSection(Integer sectionId);
 }

@@ -89,11 +89,25 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
+    public List<CourseResponseDto> retrieveAllCoursesInSection(Integer sectionId) {
+        List<Course> courseList = courseRepository.findAllBySectionId(sectionId);
+
+        List<Course> updatedCourses = getActiveStudentList(courseList);
+
+        return courseMapper.courseToCourseResponseDto(updatedCourses);
+    }
+
+    @Override
     public List<CourseResponseDto> retriveAllCourses() {
         List<Course> courseList = courseRepository.findAllActiveCourses(false);
 
-        // Filter active students in each course
-        List<Course> updatedCourses = courseList.stream()
+        List<Course> updatedCourses = getActiveStudentList(courseList);
+
+        return courseMapper.courseToCourseResponseDto(updatedCourses);
+    }
+
+    private static List<Course> getActiveStudentList(List<Course> courseList) {
+        return courseList.stream()
                 .peek(course -> {
                     Set<Student> activeStudents = course.getStudents().stream()
                             .filter(s -> !s.isDeleted())
@@ -101,7 +115,5 @@ public class CourseServiceImpl implements CourseService {
                     course.setStudents(activeStudents);
                 })
                 .toList();
-
-        return courseMapper.courseToCourseResponseDto(updatedCourses);
     }
 }

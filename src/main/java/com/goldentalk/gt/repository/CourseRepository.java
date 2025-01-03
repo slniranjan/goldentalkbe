@@ -37,4 +37,6 @@ public interface CourseRepository extends JpaRepository<Course, Integer> {
                      @Param("isInstallment") Boolean isInstallment,
                      @Param("fee") Double fee);
 
+    List<Course> findAllBySectionId(Integer sectionId);
+
 }
