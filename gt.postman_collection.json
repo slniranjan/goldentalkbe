@@ -56,13 +56,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}sections/section/oet",
+							"raw": "{{base_url}}sections/section/ielts",
 							"host": [
 								"{{base_url}}sections"
 							],
 							"path": [
 								"section",
-								"oet"
+								"ielts"
 							]
 						}
 					},
@@ -94,7 +94,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"category\": \"simple\",\r\n  \"name\": \"5 month\",\r\n  \"fee\": 10000,\r\n  \"sectionId\": {{sectionId}},\r\n  \"installment\": true\r\n}",
+							"raw": "{\r\n  \"category\": \"simple\",\r\n  \"name\": \"3 month\",\r\n  \"fee\": 10000,\r\n  \"sectionId\": {{sectionId}},\r\n  \"installment\": true\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -173,6 +173,24 @@
 					"response": []
 				},
 				{
+					"name": "Get all courses in given section",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}courses/section/3",
+							"host": [
+								"{{base_url}}courses"
+							],
+							"path": [
+								"section",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Get all courses",
 					"request": {
 						"method": "GET",
@@ -198,7 +216,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"firstName\": \"test3\",\r\n  \"middleName\": \"test 3\",\r\n  \"lastName\": \"test 3\",\r\n  \"whatsAppNumber\": \"+94712917429\",\r\n  \"address\": {\r\n    \"street\": \"test1\",\r\n    \"city\": \"fsfds\",\r\n    \"district\": \"trt\",\r\n    \"province\": \"ere\"\r\n  },\r\n  \"sectionId\": 1,\r\n  \"courseId\": 1,\r\n  \"payment\": {\r\n    \"firstPaymentAmount\": 5000,\r\n    \"secondPaymentAmount\": 0\r\n  }\r\n}",
+							"raw": "{\r\n  \"firstName\": \"test1\",\r\n  \"middleName\": \"test1\",\r\n  \"lastName\": \"test1\",\r\n  \"whatsAppNumber\": \"+94712917429\",\r\n  \"address\": {\r\n    \"street\": \"test1\",\r\n    \"city\": \"test1\",\r\n    \"district\": \"test1\",\r\n    \"province\": \"test1\"\r\n  },\r\n  \"sectionId\": 1,\r\n  \"courseId\": 1,\r\n  \"payment\": {\r\n    \"firstPaymentAmount\": 5000,\r\n    \"secondPaymentAmount\": 0\r\n  }\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -237,14 +255,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}students?deleted=true",
+							"raw": "{{base_url}}students?deleted=false",
 							"host": [
 								"{{base_url}}students"
 							],
 							"query": [
 								{
 									"key": "deleted",
-									"value": "true"
+									"value": "false"
 								}
 							]
 						}
@@ -309,7 +327,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"firstName\": \"ABC\",\r\n  \"middleName\": \"DEF\",\r\n  \"lastName\": \"ERG\",\r\n  \"dob\": \"1987-3-15\",\r\n  \"whatsAppNumber\": \"1234567890\",\r\n  \"address\": {\r\n    \"street\": \"FSF\",\r\n    \"city\": \"fsfds\",\r\n    \"district\": \"trt\",\r\n    \"province\": \"ere\"\r\n  },\r\n  \"sectionId\": [\r\n    2,3\r\n  ],\r\n  \"courseIds\": [\r\n    1\r\n  ]\r\n}",
+							"raw": "{\r\n  \"firstName\": \"new1\",\r\n  \"middleName\": \"new1\",\r\n  \"lastName\": \"new1\",\r\n  \"whatsAppNumber\": \"+94712917410\",\r\n  \"address\": {\r\n    \"street\": \"new1\",\r\n    \"city\": \"new1\",\r\n    \"district\": \"new1\",\r\n    \"province\": \"new1\"\r\n  }\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -317,12 +335,40 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}students/stu00002",
+							"raw": "{{base_url}}students/IELTS00001",
 							"host": [
 								"{{base_url}}students"
 							],
 							"path": [
-								"stu00002"
+								"IELTS00001"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add student to new course",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \r\n    \"firstPaymentAmount\": 5000,\r\n    \"secondPaymentAmount\": 0\r\n  \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}students/IELTS00001/courses/2",
+							"host": [
+								"{{base_url}}students"
+							],
+							"path": [
+								"IELTS00001",
+								"courses",
+								"2"
 							]
 						}
 					},
