@@ -1,15 +1,58 @@
-services:
+version: '3.8'
 
-  postgres:
-    image: postgres
-    container_name: pgdev
+networks:
+  spring-app-network:
+    driver: bridge
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: spring-boot-app
+    ports:
+      - "8080:8080"
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ninja
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/gtdev
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: ninja
+    depends_on:
+      - db
+    networks:
+      - spring-app-network
+
+  db:
+    image: postgres:16-alpine
+    container_name: pgdev
     ports:
       - "5432:5432"
+    environment:
+#      POSTGRES_DB: mydb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ninja
     volumes:
       - pg_data:/var/lib/postgresql/data
+    networks:
+      - spring-app-network
 
 volumes:
   pg_data:
+
+#networks:
+#  spring-app-network:
+
+#services:
+#
+#  postgres:
+#    image: postgres
+#    container_name: pgdev
+#    environment:
+#      POSTGRES_USER: postgres
+#      POSTGRES_PASSWORD: ninja
+#    ports:
+#      - "5432:5432"
+#    volumes:
+#      - pg_data:/var/lib/postgresql/data
+#
+#volumes:
+#  pg_data:
