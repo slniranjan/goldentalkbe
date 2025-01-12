@@ -19,3 +19,7 @@ https://github.com/google/styleguide/blob/gh-pages/eclipse-java-google-style.xml
 
 1. http://localhost:8080/swagger-ui/index.html
 
+## Production Setup
+1. create docker network for both backend and frontend
+`docker network create gt-network`
+2. `docker-compose up --build`

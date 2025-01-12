@@ -1,15 +1,13 @@
-version: '3.8'
-
 networks:
-  spring-app-network:
-    driver: bridge
+  gt-network:
+    external: true
 
 services:
   app:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: spring-boot-app
+    container_name: gt-backend
     ports:
       - "8080:8080"
     environment:
@@ -19,7 +17,7 @@ services:
     depends_on:
       - db
     networks:
-      - spring-app-network
+      - gt-network
 
   db:
     image: postgres:16-alpine
@@ -33,7 +31,7 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data
     networks:
-      - spring-app-network
+      - gt-network
 
 volumes:
   pg_data:
