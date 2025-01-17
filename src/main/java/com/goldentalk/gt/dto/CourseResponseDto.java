@@ -27,5 +27,7 @@ public class CourseResponseDto {
   private double courseFee;
   
   private Boolean installment;
+
+  private SectionResponseDTO sectionResponseDTO;
   
 }

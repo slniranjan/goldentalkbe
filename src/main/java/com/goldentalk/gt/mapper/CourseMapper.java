@@ -5,10 +5,7 @@ import com.goldentalk.gt.dto.CreateCourseRequestDto;
 import com.goldentalk.gt.dto.CreateCourseResponseDto;
 import com.goldentalk.gt.entity.Course;
 import com.goldentalk.gt.entity.Student;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingConstants;
-import org.mapstruct.Named;
+import org.mapstruct.*;
 
 import java.util.List;
 import java.util.Set;
@@ -23,6 +20,7 @@ public interface CourseMapper {
     @Mapping(source = "teacher.id", target = "teacherId")
     @Mapping(source = "students", target = "studentIds", qualifiedByName = "mapStudentIds")
     @Mapping(target = "studentCount", expression = "java(course.getStudents().size())")
+    @Mapping(source = "section", target = "sectionResponseDTO")
     CourseResponseDto courseToCourseResponseDto(Course course);
 
     @Mapping(target = "section", ignore = true)
@@ -36,6 +34,7 @@ public interface CourseMapper {
     @Mapping(source = "teacher.id", target = "teacherId")
     @Mapping(source = "students", target = "studentIds", qualifiedByName = "mapStudentIds")
     @Mapping(target = "studentCount", expression = "java(course.getStudents().size())")
+    @Mapping(source = "section", target = "sectionResponseDTO")
     List<CourseResponseDto> courseToCourseResponseDto(List<Course> courses);
 
     // Custom method to map student IDs to List<String>

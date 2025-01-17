@@ -1,8 +1,11 @@
 package com.goldentalk.gt.entity;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
 //@EqualsAndHashCode(callSuper = false)
@@ -26,9 +29,14 @@ public class Student extends BaseEntity {
   
   private String lastName;
   
-//  private String dob;
   @Column(unique = true)
   private String whatsappNum;
+
+  @Column(unique = true)
+  private String nic;
+
+  @Column(unique = true)
+  private String email;
   
   @ManyToOne(cascade = CascadeType.ALL)
   private Address address;
@@ -57,8 +65,8 @@ public class Student extends BaseEntity {
   @PrePersist
   private void generateStudentId() {
 
-    String sectionName = sections.stream().findAny().get().getSectionName();
-    this.studentId = String.format(sectionName +"%05d", this.id);
+    String sectionName = sections.stream().findAny().orElseThrow().getSectionName();
+    this.studentId = String.format(sectionName + LocalDate.now().getYear() % 100 +"%04d", this.id);
   }
   
 }

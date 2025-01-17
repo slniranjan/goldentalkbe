@@ -72,7 +72,10 @@ public class StudentServiceImpl implements StudentService {
                 .firstName(savedStudent.getFirstName())
                 .middleName(savedStudent.getMiddleName())
                 .lastName(savedStudent.getLastName())
-                .course(savedStudent.getCourses().stream().map(Course::getName).collect(Collectors.toSet()))
+                .course(savedStudent.getCourses().stream().map(course -> {
+                    return CourseResponseDto.builder().id(course.getId()).courseName(course.getName()).build();
+                }).collect(Collectors.toSet()))
+//                .course(savedStudent.getCourses().stream().map(Course::getName).collect(Collectors.toSet()))
                 .address(savedStudent.getAddress())
                 .build();
     }
@@ -222,15 +225,35 @@ public class StudentServiceImpl implements StudentService {
                 .build()
         ).toList();
 
+        Set<SectionResponseDTO> sectionResponseDTOS = student.getSections().stream()
+                .map(section -> {
+                    return SectionResponseDTO.builder()
+                            .id(section.getId())
+                            .sectionName(section.getSectionName())
+                            .build();
+                }).collect(Collectors.toSet());
+
+        Set<CourseResponseDto> courseResponseDtos = student.getCourses().stream()
+                .map(course -> {
+                    return CourseResponseDto.builder()
+                            .id(course.getId())
+                            .category(course.getCategory())
+                            .courseName(course.getName())
+                            .courseFee(course.getFee())
+                            .build();
+                }).collect(Collectors.toSet());
+
         return StudentResponseDto.builder()
                 .studentId(student.getStudentId())
                 .firstName(student.getFirstName())
                 .middleName(student.getMiddleName())
                 .lastName(student.getLastName())
                 .whatsAppNum(student.getWhatsappNum())
+                .nic(student.getNic())
+                .email(student.getEmail())
                 .address(student.getAddress())
-                .section(student.getSections().stream().map(s -> s.getId().toString()).collect(Collectors.toSet()))
-                .course(student.getCourses().stream().map(c -> c.getId().toString()).collect(Collectors.toSet()))
+                .section(sectionResponseDTOS)
+                .course(courseResponseDtos)
                 .payments(paymentDetails)
                 .build();
     }
@@ -283,6 +306,8 @@ public class StudentServiceImpl implements StudentService {
                 .lastName(request.getLastName())
                 .middleName(request.getMiddleName())
                 .whatsappNum(request.getWhatsAppNumber())
+                .nic(request.getNic())
+                .email(request.getEmail())
                 .sections(Set.of(section))
                 .address(address)
                 .courses(Set.of(course))
@@ -322,6 +347,8 @@ public class StudentServiceImpl implements StudentService {
         student.setLastName(request.getLastName());
         student.setMiddleName(request.getMiddleName());
         student.setWhatsappNum(request.getWhatsAppNumber());
+        student.setNic(request.getNic());
+        student.setEmail(request.getEmail());
         student.setAddress(address);
 
         Student stu = studentRepository.save(student);

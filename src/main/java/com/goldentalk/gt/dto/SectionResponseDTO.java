@@ -1,13 +1,11 @@
 package com.goldentalk.gt.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class SectionResponseDTO {
 
   private Integer id;
