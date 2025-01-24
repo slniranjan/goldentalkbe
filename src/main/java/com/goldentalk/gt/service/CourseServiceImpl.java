@@ -77,7 +77,8 @@ public class CourseServiceImpl implements CourseService {
     @Override
     @Transactional
     public CourseResponseDto updateCourse(Integer id, UpdateCourseRequestDto request) {
-        int status = courseRepository.updateCourse(id, request.getCategory(), request.getName(), request.getInstallment(), request.getFee());
+        int status = courseRepository.updateCourse(id, request.getCategory(), request.getName(), request.getInstallment(),
+                request.getFee(), request.getDiscount(), request.getActiveDiscount());
 
         if (status == 0)
             throw new NotFoundException("Course not found for the id " + id);

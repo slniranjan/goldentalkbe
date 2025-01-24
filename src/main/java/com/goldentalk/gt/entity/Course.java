@@ -17,13 +17,7 @@ public class Course extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-//  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "course_seq_gen")
-//  @SequenceGenerator(name = "course_seq_gen", sequenceName = "course_id_seq", allocationSize = 1)
   private Integer id;
-
-/*  @NotNull
-  @Column(unique = true)
-  private String courseId;*/
 
   @NotNull
   private String category;
@@ -36,6 +30,8 @@ public class Course extends BaseEntity {
 
   @Min(1000)
   private double fee;
+
+  private double discount = 0.0;
   
   @ManyToOne
   private Section section;
@@ -46,16 +42,8 @@ public class Course extends BaseEntity {
   @ManyToMany(mappedBy = "courses")
   private Set<Student> students;
   
-//  @OneToMany(mappedBy = "course")
-//  private Set<Payment> payments;
-  
-//  @OneToOne
-//  private Payment payment;
-  
   private boolean isDeleted;
-  
-  /*@PrePersist
-  private void generateStudentId() {
-    this.courseId = String.format("CRS%05d", this.id);
-  }*/
+
+  private Boolean activeDiscount = false;
+
 }

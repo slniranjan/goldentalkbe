@@ -25,4 +25,8 @@ public class CreateCourseRequestDto {
   @NotNull
   private int sectionId;
 
+  private double discount;
+
+  private Boolean activeDiscount;
+
 }

@@ -28,6 +28,10 @@ public class CourseResponseDto {
   
   private Boolean installment;
 
+  private double discount;
+
+  private Boolean activeDiscount;
+
   private SectionResponseDTO sectionResponseDTO;
   
 }

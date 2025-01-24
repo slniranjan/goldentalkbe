@@ -22,4 +22,7 @@ public class UpdateCourseRequestDto {
   @Min(1000)
   private double fee;
 
+  private double discount = 0.0;
+
+  private Boolean activeDiscount;
 }

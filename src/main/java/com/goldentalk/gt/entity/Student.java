@@ -40,6 +40,8 @@ public class Student extends BaseEntity {
   
   @ManyToOne(cascade = CascadeType.ALL)
   private Address address;
+
+  private Boolean earlyBird = false;
   
   @ManyToMany
   @JoinTable(

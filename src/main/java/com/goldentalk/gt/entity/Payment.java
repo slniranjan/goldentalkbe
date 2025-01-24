@@ -42,6 +42,5 @@ public class Payment extends BaseEntity {
     @PrePersist
     protected void onCreate() {
         firstPaymentDate = LocalDateTime.now();
-        nextPaymentDate = LocalDateTime.now().plusMonths(1);
     }
 }

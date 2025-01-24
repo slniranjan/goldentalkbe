@@ -12,6 +12,8 @@ import com.goldentalk.gt.repository.StudentRepository;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +31,9 @@ public class StudentServiceImpl implements StudentService {
     private SectionRepository sectionRepository;
     private CourseRepository courseRepository;
     private PaymentRepository paymentRepository;
+
+    @Value("#{'${app.config.courses}'.split(',')}")
+    private List<String> oneMonthCourses;
 
 
     @Override
@@ -271,12 +276,15 @@ public class StudentServiceImpl implements StudentService {
                 .orElseThrow(() -> new NotFoundException("Given course " + course.getName() +
                         " doesn't include in " + section.getSectionName() + " section"));
 
+
+
         /*Validating payment details for the selected course before save the student*/
 
-        Payment payment = new Payment();
+//        Payment payment = new Payment();
         String message = "";
         Student stu = new Student();
         PaymentStatus paymentStatus = null;
+        LocalDateTime nextPaymentDate;
         if (course.getInstallment()) {
             if (course.getFee() <= request.getPayment().getFirstPaymentAmount()) {
                 paymentStatus = PaymentStatus.COMPLETED;
@@ -292,6 +300,13 @@ public class StudentServiceImpl implements StudentService {
             } else if (course.getFee() > request.getPayment().getFirstPaymentAmount()) {
                 throw new LowPaymentException("Full payment of " + course.getFee() + " is required to register this course");
             }
+        }
+
+        /*set next payment date according to course duration*/
+        if (oneMonthCourses.contains(course.getName())) {
+            nextPaymentDate = LocalDateTime.now().plusWeeks(2);
+        } else {
+            nextPaymentDate = LocalDateTime.now().plusMonths(1);
         }
 
         Address address = Address.builder()
@@ -315,9 +330,10 @@ public class StudentServiceImpl implements StudentService {
 
         stu = studentRepository.save(student);
 
-        payment = Payment.builder()
+        Payment payment = Payment.builder()
                 .paymentStatus(paymentStatus)
                 .firstPaymentAmount(request.getPayment().getFirstPaymentAmount())
+                .nextPaymentDate(nextPaymentDate)
                 .student(stu)
                 .course(course)
                 .build();

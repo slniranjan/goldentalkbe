@@ -23,7 +23,7 @@ public class CreateStudentRequest {
             "Ex: +94xxxxxxxxxxxx Maximum length is 15")
     private String whatsAppNumber;
 
-    @Size(min = 10, max = 10)
+    @Size(min = 10, max = 12)
     private String nic;
 
     @Email
@@ -40,5 +40,7 @@ public class CreateStudentRequest {
 
     @NotNull(message = "Payment information required for student registration")
     PaymentDetailsDTO payment;
+
+    private Boolean earlyBird;
 
 }

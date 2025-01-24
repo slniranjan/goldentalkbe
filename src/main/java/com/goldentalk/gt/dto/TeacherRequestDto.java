@@ -19,7 +19,7 @@ public class TeacherRequestDto {
 
   @NotNull
   @NotBlank
-  @Size(min = 10, max = 10)
+  @Size(min = 10, max = 12)
   private String nic;
 
   @NotNull
