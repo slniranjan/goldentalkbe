@@ -9,10 +9,12 @@ import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Contact;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.info.License;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableJpaAuditing(auditorAwareRef = "auditAwareImpl")
-@EnableAspectJAutoProxy  
+@EnableAspectJAutoProxy
+@EnableScheduling
 @OpenAPIDefinition(
     info = @Info(
             title = "Golden talk  REST API Documentation",

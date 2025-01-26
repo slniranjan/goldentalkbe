@@ -1,10 +1,13 @@
 package com.goldentalk.gt.config.security.service;
 
 import com.goldentalk.gt.config.security.entity.RefreshToken;
+import com.goldentalk.gt.config.security.entity.UserInfo;
 import com.goldentalk.gt.config.security.repository.RefreshTokenRepository;
 import com.goldentalk.gt.config.security.repository.UserInfoRepository;
 import com.goldentalk.gt.exception.AlreadyLoginException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -13,27 +16,29 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class RefreshTokenService {
 
-    @Autowired
-    private RefreshTokenRepository refreshTokenRepository;
-    @Autowired
-    private UserInfoRepository userInfoRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
+
+    private final UserInfoRepository userInfoRepository;
 
     public RefreshToken createRefreshToken(String username) {
-        try {
-            RefreshToken refreshToken = RefreshToken.builder()
-                    .userInfo(userInfoRepository.findByEmail(username).get())
-                    .token(UUID.randomUUID().toString())
-                    .expiryDate(Instant.now().plusMillis(120000))//10
-                    .build();
-            return refreshTokenRepository.save(refreshToken);
-        } catch(DataIntegrityViolationException die) {
-            if (die.getMessage().indexOf("refresh_token") != -1) {
-                throw new AlreadyLoginException("You are already logged in");
-            }
-            throw new RuntimeException(die.getMessage());
+
+        UserInfo userInfo = userInfoRepository.findByEmail(username).get();
+        RefreshToken existingRefreshToken = refreshTokenRepository.findByUserInfo(userInfo);
+
+        if(existingRefreshToken != null) {
+            refreshTokenRepository.delete(existingRefreshToken);
         }
+
+        RefreshToken refreshToken = RefreshToken.builder()
+                .userInfo(userInfo)
+                .token(UUID.randomUUID().toString())
+                .expiryDate(Instant.now().plusMillis(120000))//10
+                .build();
+
+        return refreshTokenRepository.save(refreshToken);
 
     }
 
@@ -49,4 +54,11 @@ public class RefreshTokenService {
         return token;
     }
 
+    public void deleteRefreshToken(RefreshToken refreshToken) {
+        refreshTokenRepository.delete(refreshToken);
+    }
+
+    public RefreshToken retrieveRefreshToken(UserInfo userInfo) {
+        return refreshTokenRepository.findByUserInfo(userInfo);
+    }
 }

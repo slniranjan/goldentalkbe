@@ -3,7 +3,12 @@ package com.goldentalk.gt.config.security.service;
 
 import com.goldentalk.gt.config.security.entity.UserInfo;
 import com.goldentalk.gt.config.security.repository.UserInfoRepository;
+import com.goldentalk.gt.exception.AlreadyExistsException;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -11,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+
 
 @Service
 public class UserInfoService implements UserDetailsService {
@@ -31,9 +37,19 @@ public class UserInfoService implements UserDetailsService {
     }
 
     public String addUser(UserInfo userInfo) {
-        // Encode password before saving the user
-        userInfo.setPassword(encoder.encode(userInfo.getPassword()));
-        repository.save(userInfo);
-        return "User Added Successfully";
+
+        try {
+            userInfo.setPassword(encoder.encode(userInfo.getPassword()));
+
+            repository.save(userInfo);
+            return "User Added Successfully";
+        } catch (DataIntegrityViolationException dive) {
+            throw new AlreadyExistsException(dive.getMessage());
+        }
+
+    }
+
+    public UserInfo retrieveUserInfo(String email) {
+        return repository.findByEmail(email).get();
     }
 }

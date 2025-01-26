@@ -1,12 +1,13 @@
 package com.goldentalk.gt.config.security.service;
 
+import com.goldentalk.gt.config.security.entity.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -36,9 +37,15 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable()) // Disable CSRF for stateless APIs
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/welcome", "/auth/addNewUser", "/auth/generateToken", "/auth/refreshToken").permitAll()
-                        .requestMatchers("/auth/user/**").hasAuthority("ROLE_USER") // supervisor, create only, get
-                        .requestMatchers("/auth/admin/**").hasAuthority("ROLE_ADMIN") // all
+                        .requestMatchers("/auth/addNewUser", "/auth/login", "/auth/refreshToken").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/students/**", "/api/v1/sections/**", "/api/v1/courses/**")
+                            .hasRole(UserRole.ADMIN.name()) // all
+                        .requestMatchers("/api/v1/students/**", "/api/v1/sections/**", "/api/v1/courses/**")
+                            .hasAnyRole(UserRole.ADMIN.name(),UserRole.SUPERVISOR.name())// supervisor, create only, get
+
+
+
+
                         .anyRequest().authenticated() // Protect all other endpoints
                 )
                 .sessionManagement(sess -> sess

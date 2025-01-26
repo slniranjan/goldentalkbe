@@ -1,49 +1,93 @@
 package com.goldentalk.gt.controller;
 
-//import com.goldentalk.gt.dto.JwtResponse;
-//import lombok.AllArgsConstructor;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.security.core.Authentication;
-//import org.springframework.security.core.GrantedAuthority;
-//import org.springframework.security.oauth2.jwt.JwtClaimsSet;
-//import org.springframework.security.oauth2.jwt.JwtEncoder;
-//import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
-//import org.springframework.web.bind.annotation.PostMapping;
-//import org.springframework.web.bind.annotation.RequestMapping;
-//import org.springframework.web.bind.annotation.RestController;
 
-import java.time.Instant;
-import java.util.stream.Collectors;
+import com.goldentalk.gt.config.security.entity.*;
+import com.goldentalk.gt.config.security.service.BlackListTokenService;
+import com.goldentalk.gt.config.security.service.JwtService;
+import com.goldentalk.gt.config.security.service.RefreshTokenService;
+import com.goldentalk.gt.config.security.service.UserInfoService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.annotation.*;
 
-//@RestController
-//@RequestMapping("/api/v1")
-//@AllArgsConstructor
+@RequiredArgsConstructor
+@RestController
+@RequestMapping("/auth")
 public class LoginController {
-//    @Autowired
-//    JwtEncoder encoder;
-//
-//    @PostMapping("/token")
-//    public JwtResponse token(Authentication authentication) {
-//        if (authentication == null || !authentication.isAuthenticated()) {
-//            throw new RuntimeException("Authentication failed!");
-//        }
-//        System.out.println("Authenticated user: " + authentication.getName());
-//
-//        Instant now = Instant.now();
-//        long expiry = 36000L;
-//
-//        String scope = authentication.getAuthorities().stream()
-//                .map(GrantedAuthority::getAuthority)
-//                .collect(Collectors.joining(" "));
-//        JwtClaimsSet claims = JwtClaimsSet.builder()
-//                .issuer("self")
-//                .issuedAt(now)
-//                .expiresAt(now.plusSeconds(expiry))
-//                .subject(authentication.getName())
-//                .claim("scope", scope)
-//                .build();
-//        return JwtResponse.builder()
-//                .jwt(this.encoder.encode(JwtEncoderParameters.from(claims)).getTokenValue())
-//                .build();
-//    }
+
+    private final UserInfoService userInfoService;
+
+    private final JwtService jwtService;
+
+    private final AuthenticationManager authenticationManager;
+
+    private final RefreshTokenService refreshTokenService;
+
+    private final BlackListTokenService blackListTokenService;
+
+
+    @PostMapping("/addNewUser")
+    public String addNewUser(@RequestBody UserInfo userInfo) {
+
+        return userInfoService.addUser(userInfo);
+
+    }
+
+    @PostMapping("/login")
+    public JwtResponse authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
+        );
+        if (authentication.isAuthenticated()) {
+            RefreshToken refreshToken = refreshTokenService.createRefreshToken(authRequest.getUsername());
+            return JwtResponse.builder()
+                    .accessToken(jwtService.generateToken(authRequest.getUsername()))
+                    .token(refreshToken.getToken()).build();
+
+        } else {
+            throw new UsernameNotFoundException("Invalid user request!");
+        }
+    }
+
+    @PostMapping("/refreshToken")
+    public JwtResponse refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
+
+        return refreshTokenService.findByToken(refreshTokenRequest.getToken())
+                .map(refreshTokenService::verifyExpiration)
+                .map(RefreshToken::getUserInfo)
+                .map(userInfo -> {
+                    String accessToken = jwtService.generateToken(userInfo.getEmail());
+                    return JwtResponse.builder()
+                            .accessToken(accessToken)
+                            .token(refreshTokenRequest.getToken())
+                            .build();
+                }).orElseThrow(() -> new RuntimeException(
+                        "Refresh token is not in database!"));
+    }
+
+    @PostMapping("/logout")
+    public void logout(@RequestHeader("Authorization") String authHeader) {
+
+        BlackListToken blackListToken = new BlackListToken();
+        blackListToken.setToken(authHeader.substring(7));
+
+        blackListTokenService.saveToken(blackListToken);
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if(authentication == null && !authentication.isAuthenticated()) {
+            return;
+        }
+        UserInfo userInfo = userInfoService.retrieveUserInfo(authentication.getName());
+        RefreshToken refreshToken = refreshTokenService.retrieveRefreshToken(userInfo);
+
+        refreshTokenService.deleteRefreshToken(refreshToken);
+
+
+    }
 }
