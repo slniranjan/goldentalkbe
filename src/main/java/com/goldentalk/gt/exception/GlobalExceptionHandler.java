@@ -120,5 +120,15 @@ public class GlobalExceptionHandler {
         return rootCause.getMessage();
     }
 
+    @ExceptionHandler(AlreadyLoginException.class)
+    public ResponseEntity<ErrorResponseDto> handleAlreadyLoginException(AlreadyLoginException ex, WebRequest reqeust) {
 
+        ErrorResponseDto errorResponseDTO = ErrorResponseDto.builder()
+                .apiPath(reqeust.getDescription(false))
+                .errorMessage(ex.getMessage())
+                .errorCode(HttpStatus.FORBIDDEN.value())
+                .errorTime(LocalDateTime.now()).build();
+
+        return new ResponseEntity<>(errorResponseDTO, HttpStatus.FORBIDDEN);
+    }
 }
