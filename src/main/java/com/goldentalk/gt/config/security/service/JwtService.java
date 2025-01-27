@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,13 @@ import java.util.function.Function;
 public class JwtService {
 
     // Replace this with a secure key in a real application, ideally fetched from environment variables
-    public static final String SECRET = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
+//    public static final String SECRET = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
+
+    @Value("${jwt.secret}")
+    private String secret;
+
+    @Value("${jwt.token.expireation.milliseconds}")
+    private long expireationTime;
 
     // Generate token with given user name
     public String generateToken(String userName) {
@@ -34,14 +41,14 @@ public class JwtService {
                 .setClaims(claims)
                 .setSubject(userName)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 1)) // Token valid for 30 minutes
+                .setExpiration(new Date(System.currentTimeMillis() + expireationTime)) // Token valid for 30 minutes
                 .signWith(getSignKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
     // Get the signing key for JWT token
     private Key getSignKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(SECRET);
+        byte[] keyBytes = Decoders.BASE64.decode(secret);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 

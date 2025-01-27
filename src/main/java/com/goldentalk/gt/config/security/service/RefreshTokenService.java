@@ -7,6 +7,7 @@ import com.goldentalk.gt.config.security.repository.UserInfoRepository;
 import com.goldentalk.gt.exception.AlreadyLoginException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,9 @@ public class RefreshTokenService {
 
     private final UserInfoRepository userInfoRepository;
 
+    @Value("${jwt.refresh.token.expiration.milliseconds}")
+    private long refreshTokenExpiration;
+
     public RefreshToken createRefreshToken(String username) {
 
         UserInfo userInfo = userInfoRepository.findByEmail(username).get();
@@ -35,7 +39,7 @@ public class RefreshTokenService {
         RefreshToken refreshToken = RefreshToken.builder()
                 .userInfo(userInfo)
                 .token(UUID.randomUUID().toString())
-                .expiryDate(Instant.now().plusMillis(120000))//10
+                .expiryDate(Instant.now().plusMillis(refreshTokenExpiration))
                 .build();
 
         return refreshTokenRepository.save(refreshToken);
