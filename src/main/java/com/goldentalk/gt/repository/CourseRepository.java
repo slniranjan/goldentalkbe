@@ -30,14 +30,14 @@ public interface CourseRepository extends JpaRepository<Course, Integer> {
 
     @Modifying
     @Transactional
-    @Query("UPDATE Course c SET c.category = :category, c.name = :name, c.installment = :isInstallment, c.fee = :fee, c.discount = :discount, c.activeDiscount = :activeDiscount WHERE c.id = :id AND c.isDeleted = false")
+    @Query("UPDATE Course c SET c.category = :category, c.name = :name, c.installment = :isInstallment, c.fee = :fee, c.discount = :discount WHERE c.id = :id AND c.isDeleted = false")
     int updateCourse(@Param("id") Integer id,
                      @Param("category") String category,
                      @Param("name") String name,
                      @Param("isInstallment") Boolean isInstallment,
                      @Param("fee") Double fee,
-                     @Param("discount") Double discount,
-                     @Param("activeDiscount") Boolean activeDiscount);
+                     @Param("discount") Double discount);
+//                     @Param("activeDiscount") Boolean activeDiscount);
 
     List<Course> findAllBySectionId(Integer sectionId);
 

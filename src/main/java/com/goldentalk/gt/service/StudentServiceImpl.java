@@ -276,37 +276,56 @@ public class StudentServiceImpl implements StudentService {
                 .orElseThrow(() -> new NotFoundException("Given course " + course.getName() +
                         " doesn't include in " + section.getSectionName() + " section"));
 
-
-
         /*Validating payment details for the selected course before save the student*/
-
-//        Payment payment = new Payment();
         String message = "";
         Student stu = new Student();
         PaymentStatus paymentStatus = null;
-        LocalDateTime nextPaymentDate;
-        if (course.getInstallment()) {
-            if (course.getFee() <= request.getPayment().getFirstPaymentAmount()) {
-                paymentStatus = PaymentStatus.COMPLETED;
-                message = "Full payment done. Student successfully registered!";
-            } else {
-                paymentStatus = PaymentStatus.PENDING;
-                message = "Partial payment done. Student successfully registered!";
-            }
-        } else {
-            if (course.getFee() <= request.getPayment().getFirstPaymentAmount()) {
-                paymentStatus = PaymentStatus.COMPLETED;
-                message = "Full payment done. Student successfully registered!";
-            } else if (course.getFee() > request.getPayment().getFirstPaymentAmount()) {
-                throw new LowPaymentException("Full payment of " + course.getFee() + " is required to register this course");
-            }
-        }
+        LocalDateTime nextPaymentDate = null;
 
-        /*set next payment date according to course duration*/
-        if (oneMonthCourses.contains(course.getName())) {
-            nextPaymentDate = LocalDateTime.now().plusWeeks(2);
+        String fullPayMsg = "Full payment done. Student successfully registered! ";
+
+        if (request.getEarlyBird()) {
+            double discountedPrice = course.getFee() - course.getDiscount();
+            if (discountedPrice == request.getPayment().getFirstPaymentAmount()) {
+                paymentStatus = PaymentStatus.COMPLETED;
+                message = fullPayMsg;
+            } else if (discountedPrice < request.getPayment().getFirstPaymentAmount()) {
+                paymentStatus = PaymentStatus.COMPLETED;
+                double balance = request.getPayment().getFirstPaymentAmount() - discountedPrice;
+                message = "Full payment done. The student has Rs." + balance + " amount as a balance. Student successfully registered!";
+            }
         } else {
-            nextPaymentDate = LocalDateTime.now().plusMonths(1);
+            if (course.getInstallment()) {
+                if (course.getFee() == request.getPayment().getFirstPaymentAmount()) {
+                    paymentStatus = PaymentStatus.COMPLETED;
+                    message = fullPayMsg;
+                } else if (course.getFee() < request.getPayment().getFirstPaymentAmount()) {
+                    paymentStatus = PaymentStatus.COMPLETED;
+                    double balance = request.getPayment().getFirstPaymentAmount() - course.getFee();
+                    message = "Full payment done. The student has Rs." + balance + " amount as a balance. Student successfully registered!";
+                } else {
+                    paymentStatus = PaymentStatus.PENDING;
+                    message = "Partial payment done. Student successfully registered!";
+
+                    /*set next payment date according to course duration*/
+                    if (oneMonthCourses.contains(course.getName())) {
+                        nextPaymentDate = LocalDateTime.now().plusWeeks(2);
+                    } else {
+                        nextPaymentDate = LocalDateTime.now().plusMonths(1);
+                    }
+                }
+            } else {
+                    if (course.getFee() == request.getPayment().getFirstPaymentAmount()) {
+                        paymentStatus = PaymentStatus.COMPLETED;
+                        message = fullPayMsg;
+                    } else if (course.getFee() < request.getPayment().getFirstPaymentAmount()) {
+                        paymentStatus = PaymentStatus.COMPLETED;
+                        double balance = request.getPayment().getFirstPaymentAmount() - course.getFee();
+                        message = "Full payment done. The student has Rs." + balance + " amount as a balance. Student successfully registered!";
+                    } else if (course.getFee() > request.getPayment().getFirstPaymentAmount()) {
+                        throw new LowPaymentException("Full payment of " + course.getFee() + " is required to register to this course");
+                    }
+            }
         }
 
         Address address = Address.builder()

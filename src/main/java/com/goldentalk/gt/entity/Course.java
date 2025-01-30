@@ -44,6 +44,6 @@ public class Course extends BaseEntity {
   
   private boolean isDeleted;
 
-  private Boolean activeDiscount = false;
+//  private Boolean activeDiscount = false;
 
 }

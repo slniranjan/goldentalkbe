@@ -27,6 +27,6 @@ public class CreateCourseRequestDto {
 
   private double discount;
 
-  private Boolean activeDiscount;
+//  private Boolean activeDiscount;
 
 }
