@@ -292,7 +292,10 @@ public class StudentServiceImpl implements StudentService {
             } else if (discountedPrice < request.getPayment().getFirstPaymentAmount()) {
                 paymentStatus = PaymentStatus.COMPLETED;
                 double balance = request.getPayment().getFirstPaymentAmount() - discountedPrice;
+                request.getPayment().setFirstPaymentAmount(discountedPrice);
                 message = "Full payment done. The student has Rs." + balance + " amount as a balance. Student successfully registered!";
+            } else {
+                throw new LowPaymentException("Full payment of Rs." + discountedPrice + " is required to register under the EarlyBird offer");
             }
         } else {
             if (course.getInstallment()) {
@@ -321,9 +324,10 @@ public class StudentServiceImpl implements StudentService {
                     } else if (course.getFee() < request.getPayment().getFirstPaymentAmount()) {
                         paymentStatus = PaymentStatus.COMPLETED;
                         double balance = request.getPayment().getFirstPaymentAmount() - course.getFee();
+                        request.getPayment().setFirstPaymentAmount(course.getFee());
                         message = "Full payment done. The student has Rs." + balance + " amount as a balance. Student successfully registered!";
                     } else if (course.getFee() > request.getPayment().getFirstPaymentAmount()) {
-                        throw new LowPaymentException("Full payment of " + course.getFee() + " is required to register to this course");
+                        throw new LowPaymentException("Full payment of Rs." + course.getFee() + " is required to register to this course");
                     }
             }
         }
@@ -342,6 +346,7 @@ public class StudentServiceImpl implements StudentService {
                 .whatsappNum(request.getWhatsAppNumber())
                 .nic(request.getNic())
                 .email(request.getEmail())
+                .earlyBird(request.getEarlyBird())
                 .sections(Set.of(section))
                 .address(address)
                 .courses(Set.of(course))

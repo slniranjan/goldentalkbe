@@ -30,8 +30,6 @@ public class CourseResponseDto {
 
   private double discount;
 
-  private Boolean activeDiscount;
-
   private SectionResponseDTO sectionResponseDTO;
   
 }

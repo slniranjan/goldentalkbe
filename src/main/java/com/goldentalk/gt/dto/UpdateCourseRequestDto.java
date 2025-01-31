@@ -24,5 +24,4 @@ public class UpdateCourseRequestDto {
 
   private double discount = 0.0;
 
-//  private Boolean activeDiscount;
 }
