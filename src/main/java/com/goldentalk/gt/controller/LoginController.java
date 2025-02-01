@@ -2,17 +2,16 @@ package com.goldentalk.gt.controller;
 
 
 import com.goldentalk.gt.config.security.entity.*;
-import com.goldentalk.gt.config.security.service.BlackListTokenService;
-import com.goldentalk.gt.config.security.service.JwtService;
-import com.goldentalk.gt.config.security.service.RefreshTokenService;
-import com.goldentalk.gt.config.security.service.UserInfoService;
+import com.goldentalk.gt.config.security.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -30,6 +29,8 @@ public class LoginController {
 
     private final BlackListTokenService blackListTokenService;
 
+    private final PasswordEncoder encoder;
+
 
     @PostMapping("/addNewUser")
     public String addNewUser(@RequestBody UserInfo userInfo) {
@@ -44,6 +45,15 @@ public class LoginController {
                 new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
         );
         if (authentication.isAuthenticated()) {
+
+            UserInfoDetails userDetials = (UserInfoDetails) authentication.getPrincipal();
+
+            if(userDetials.isFirstLogin()) {
+                return JwtResponse.builder()
+                        .accessToken(jwtService.generateToken(authRequest.getUsername()))
+                        .redirectUrl("/gt/auth/change-password").build();
+            }
+
             RefreshToken refreshToken = refreshTokenService.createRefreshToken(authRequest.getUsername());
             return JwtResponse.builder()
                     .accessToken(jwtService.generateToken(authRequest.getUsername()))
@@ -54,6 +64,20 @@ public class LoginController {
         }
     }
 
+    @PostMapping("/change-password")
+    public void changePassword(@RequestBody ChangePasswordRequest request) {
+
+        UserInfoDetails userDetails = (UserInfoDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        UserInfo userInfo = userInfoService.retrieveUserInfo(userDetails.getUsername());
+
+        userInfo.setPassword(encoder.encode(request.getNewPassword()));
+        userInfo.setRoles(userInfo.getRoles().replace("_NEW", ""));
+        userInfo.setFirstLogin(false);
+
+        userInfoService.updateUserInfo(userInfo);
+    }
+
     @PostMapping("/refreshToken")
     public JwtResponse refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
 
@@ -61,7 +85,7 @@ public class LoginController {
                 .map(refreshTokenService::verifyExpiration)
                 .map(RefreshToken::getUserInfo)
                 .map(userInfo -> {
-                    String accessToken = jwtService.generateToken(userInfo.getEmail());
+                    String accessToken = jwtService.generateToken(userInfo.getUsername());
                     return JwtResponse.builder()
                             .accessToken(accessToken)
                             .token(refreshTokenRequest.getToken())

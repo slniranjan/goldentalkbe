@@ -29,27 +29,35 @@ public class UserInfoService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<UserInfo> userDetail = repository.findByEmail(username); // Assuming 'email' is used as username
+        Optional<UserInfo> userDetail = repository.findByUsername(username);
 
         // Converting UserInfo to UserDetails
-        return userDetail.map(UserInfoDetails::new)
+        UserDetails userDetails =  userDetail.map(UserInfoDetails::new)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+
+        return userDetails;
     }
 
     public String addUser(UserInfo userInfo) {
 
         try {
             userInfo.setPassword(encoder.encode(userInfo.getPassword()));
+            userInfo.setFirstLogin(true);
+            userInfo.setRoles(userInfo.getRoles().concat("_NEW"));
 
             repository.save(userInfo);
             return "User Added Successfully";
         } catch (DataIntegrityViolationException dive) {
-            throw new AlreadyExistsException(dive.getMessage());
+            throw new AlreadyExistsException(dive.getMessage().contains("already exists") ? "Username already exists" : dive.getMessage());
         }
 
     }
 
-    public UserInfo retrieveUserInfo(String email) {
-        return repository.findByEmail(email).get();
+    public UserInfo retrieveUserInfo(String username) {
+        return repository.findByUsername(username).get();
+    }
+
+    public void updateUserInfo(UserInfo userInfo) {
+        repository.save(userInfo);
     }
 }

@@ -1,6 +1,7 @@
 package com.goldentalk.gt.config.security.service;
 
 import com.goldentalk.gt.config.security.entity.UserInfo;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,14 +15,17 @@ public class UserInfoDetails implements UserDetails {
     private String username; // Changed from 'name' to 'username' for clarity
     private String password;
     private List<GrantedAuthority> authorities;
+    @Getter
+    private boolean firstLogin;
 
     public UserInfoDetails(UserInfo userInfo) {
-        this.username = userInfo.getEmail(); // Assuming 'name' is used as 'username'
+        this.username = userInfo.getUsername(); // Assuming 'name' is used as 'username'
         this.password = userInfo.getPassword();
         this.authorities = List.of(userInfo.getRoles().split(","))
                 .stream()
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
+        this.firstLogin = userInfo.isFirstLogin();
     }
 
     @Override
@@ -58,4 +62,5 @@ public class UserInfoDetails implements UserDetails {
     public boolean isEnabled() {
         return true; // Implement your logic if you need this
     }
+
 }

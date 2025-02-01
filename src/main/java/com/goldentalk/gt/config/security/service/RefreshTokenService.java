@@ -29,7 +29,7 @@ public class RefreshTokenService {
 
     public RefreshToken createRefreshToken(String username) {
 
-        UserInfo userInfo = userInfoRepository.findByEmail(username).get();
+        UserInfo userInfo = userInfoRepository.findByUsername(username).get();
         RefreshToken existingRefreshToken = refreshTokenRepository.findByUserInfo(userInfo);
 
         if(existingRefreshToken != null) {

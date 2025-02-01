@@ -37,15 +37,19 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable()) // Disable CSRF for stateless APIs
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/addNewUser", "/auth/login", "/auth/refreshToken").permitAll()
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/students/**", "/api/v1/sections/**", "/api/v1/courses/**")
-                            .hasRole(UserRole.ADMIN.name()) // all
+                        .requestMatchers("/auth/login", "/auth/refreshToken").permitAll()
+                        .requestMatchers(HttpMethod.DELETE,  "/api/v1/students/**", "/api/v1/sections/**", "/api/v1/courses/**")
+                            .hasRole(UserRole.ADMIN.name())
+                        .requestMatchers(HttpMethod.PUT,  "/api/v1/students/**", "/api/v1/sections/**", "/api/v1/courses/**")
+                            .hasRole(UserRole.ADMIN.name())
+                        .requestMatchers(HttpMethod.PATCH,  "/api/v1/students/**", "/api/v1/sections/**", "/api/v1/courses/**")
+                            .hasRole(UserRole.ADMIN.name())
+                        .requestMatchers(  "/auth/addNewUser")
+                            .hasRole(UserRole.ADMIN.name())
                         .requestMatchers("/api/v1/students/**", "/api/v1/sections/**", "/api/v1/courses/**")
-                            .hasAnyRole(UserRole.ADMIN.name(),UserRole.SUPERVISOR.name())// supervisor, create only, get
-
-
-
-
+                            .hasAnyRole(UserRole.ADMIN.name(),UserRole.SUPERVISOR.name())
+                        .requestMatchers("/auth/change-password")
+                            .hasAnyRole(UserRole.SUPERVISOR_NEW.name(),UserRole.ADMIN_NEW.name(),UserRole.ADMIN.name(), UserRole.SUPERVISOR.name())
                         .anyRequest().authenticated() // Protect all other endpoints
                 )
                 .sessionManagement(sess -> sess
