@@ -4,6 +4,7 @@ package com.goldentalk.gt.controller;
 import com.goldentalk.gt.config.security.entity.*;
 import com.goldentalk.gt.config.security.service.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -31,6 +32,8 @@ public class LoginController {
 
     private final PasswordEncoder encoder;
 
+    @Value("${password.change.endpoint.url}")
+    private String baseUrl;
 
     @PostMapping("/addNewUser")
     public String addNewUser(@RequestBody UserInfo userInfo) {
@@ -51,7 +54,7 @@ public class LoginController {
             if(userDetials.isFirstLogin()) {
                 return JwtResponse.builder()
                         .accessToken(jwtService.generateToken(authRequest.getUsername()))
-                        .redirectUrl("/gt/auth/change-password").build();
+                        .redirectEndpoint(baseUrl + "gt/auth/change-password").build();
             }
 
             RefreshToken refreshToken = refreshTokenService.createRefreshToken(authRequest.getUsername());

@@ -17,5 +17,5 @@ public class JwtResponse {
     private String accessToken;
     private String token;
 
-    private String redirectUrl;
+    private String redirectEndpoint;
 }
