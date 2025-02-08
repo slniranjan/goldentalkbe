@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -36,7 +37,7 @@ public class LoginController {
     private String baseUrl;
 
     @PostMapping("/addNewUser")
-    public String addNewUser(@RequestBody UserInfo userInfo) {
+    public String addNewUser(@RequestBody @Validated UserInfo userInfo) {
 
         return userInfoService.addUser(userInfo);
 

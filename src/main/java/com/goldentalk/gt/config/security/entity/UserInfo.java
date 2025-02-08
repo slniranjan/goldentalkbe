@@ -21,14 +21,12 @@ public class UserInfo {
 
     private String lastName;
 
+    @Column(unique = true)
     private String phoneNumber;
 
     @NotNull @NotBlank
     @Column(unique = true)
     private String username;
-
-//    @Column(unique = true)
-//    private String email;
 
     @NotNull @NotBlank
     private String password;
